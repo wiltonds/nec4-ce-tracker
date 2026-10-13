@@ -1,0 +1,10 @@
+activity_id,activity,owner,planned_start,planned_finish,status,total_float_days,depends_on,blocked_by_event
+DOC-4350,Listed Building Consent,Notice/Consent Periods,2026-04-25,2026-06-05,In progress,111.0,,CE-01
+DOC-4400,Scheduled Monuments Consent from Historic Environment Scotland and Perth and Kinross Heritage Trust (not needed),Inactive-Removed Tasks,2025-07-31,2025-07-31,Complete,,,CE-01
+TWD-8200,S04 Culvert 23 CH:1600 - Sheet Piling TWD - Detailed Design,Temporary Sheet Piling,2026-07-10,2026-08-06,In progress,11.0,,CE-01
+TWD-8350,S04 Culvert 23 CH:1600 - Sheet Piling TWD - PM Acceptance,Temporary Sheet Piling,2026-07-24,2026-08-20,Not started,17.0,,CE-01
+CLV-5450,Culvert 23 CH:1600 / SB - Installation of the extension to the existing culvert,Culvert 23/A9 - SB CH 1600 - Two phases,2026-08-28,2026-09-02,Not started,5.0,TWD-8350,CE-01
+CLV-5500,Culvert 23 CH:1600 / SB - Install temporary sheet piles at the edge of the existing road,Culvert 23/A9 - SB CH 1600 - Two phases,2026-09-03,2026-09-04,Not started,5.0,CLV-5450,CE-01
+CLV-5550,Culvert 23 CH:1600 / SB - Install culvert sections below new Southbound Carriageway,Culvert 23/A9 - SB CH 1600 - Two phases,2026-09-07,2026-09-08,Not started,5.0,CLV-5500,CE-01
+CLV-5600,Culvert 23 CH:1600 / SB - Construct new inlet,Culvert 23/A9 - SB CH 1600 - Two phases,2026-09-09,2026-09-10,Not started,5.0,CLV-5550,CE-01
+TMP-4000,"Traffic Switch 1 - Phase 2, Zone 1, 2 and Zone 3 complete (excl. planting/seeding) Releases Phase 3 Zones 1 and Zones 2",Traffic Switch (No Lane/Road Closure),2027-04-28,2027-04-28,Not started,12.0,,CE-01

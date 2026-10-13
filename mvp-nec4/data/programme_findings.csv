@@ -1,0 +1,8 @@
+event_id,activity_id,severity,finding
+CE-01,DOC-4350,high,"'Listed Building Consent' is not a predecessor of the CH 1600 sheet piling or its temporary works design, so the programme does not show the consent as a constraint on those works (relevant to delay assessment, cl. 63.5)."
+CE-01,DOC-4400,high,'Scheduled Monuments Consent from Historic Environment Scotland and Perth and Kinross Heritage Trust (not needed)' was removed from the programme as 'not needed'.
+CE-01,CLV-5450,medium,'Culvert 23 CH:1600 / SB - Installation of the extension to the existing culvert' has only 5 days of total float: any delay quickly reaches the critical path.
+CE-01,CLV-5500,medium,'Culvert 23 CH:1600 / SB - Install temporary sheet piles at the edge of the existing road' has only 5 days of total float: any delay quickly reaches the critical path.
+CE-01,CLV-5550,medium,'Culvert 23 CH:1600 / SB - Install culvert sections below new Southbound Carriageway' has only 5 days of total float: any delay quickly reaches the critical path.
+CE-01,CLV-5600,medium,'Culvert 23 CH:1600 / SB - Construct new inlet' has only 5 days of total float: any delay quickly reaches the critical path.
+ALL,-,info,Programme data date: 22 May 2026. Status and float are as at that date.
