@@ -108,7 +108,16 @@ location (chainage / km / structure, e.g. "CH 1600"),
 affected_activity (the planned activity affected, short),
 clauses (semicolon list of NEC4 clauses engaged, e.g. "60.1(5); 61.3"),
 potential_ce (true/false: could this support a compensation event for the Contractor?),
-reasoning (1-2 sentences why).
+reasoning (1-2 sentences why),
+package_id (one id from the package list below),
+topic_id (the existing topic this fact belongs to, from the topic list below, or "NEW"),
+work_package (the work package / structure / section affected, short).
+
+Packages (id: name):
+{packages}
+
+Existing topics (id: title):
+{topics}
 
 Programme activities for context:
 {activities}
@@ -117,13 +126,14 @@ Document:
 \"\"\"{text}\"\"\""""
 
 
-def ai_extract(text: str, filename: str, activities: str) -> dict:
+def ai_extract(text: str, filename: str, activities: str, packages: str = "", topics: str = "") -> dict:
     import anthropic
     client = anthropic.Anthropic()
     msg = client.messages.create(
         model=MODEL,
         max_tokens=800,
-        messages=[{"role": "user", "content": PROMPT.format(activities=activities, text=text[:30000])}],
+        messages=[{"role": "user", "content": PROMPT.format(activities=activities[:6000], packages=packages,
+                                                                  topics=topics[:6000], text=text[:30000])}],
     )
     raw = msg.content[0].text
     raw = raw[raw.find("{"): raw.rfind("}") + 1]
@@ -132,16 +142,32 @@ def ai_extract(text: str, filename: str, activities: str) -> dict:
     return out
 
 
-def extract(name: str, data: bytes, activities: str = "") -> tuple[dict, str]:
+def extract(name: str, data: bytes, activities: str = "", packages: str = "", topics: str = "") -> tuple[dict, str]:
     text = redact(read_text(name, data))
     if os.getenv("ANTHROPIC_API_KEY"):
         try:
-            return ai_extract(text, name, activities), text
+            return ai_extract(text, name, activities, packages, topics), text
         except Exception as e:  # keep the demo running
             res = heuristic_extract(text, name)
             res["reasoning"] = f"AI failed ({e.__class__.__name__}); used keyword rules."
             return res, text
     return heuristic_extract(text, name), text
+
+
+def refine_narrative(draft: str) -> str:
+    """Optional: ask Claude to tighten a programme narrative without changing facts or figures."""
+    import anthropic
+    client = anthropic.Anthropic()
+    msg = client.messages.create(
+        model=MODEL,
+        max_tokens=3000,
+        messages=[{"role": "user", "content":
+                   "You are an NEC4 planner writing the delay narrative for a Clause 32 revised programme. "
+                   "Improve clarity and flow of this narrative. Keep every date, reference, activity code and "
+                   "number exactly as given, do not invent facts, use roles not personal names, keep the section "
+                   "structure. Return only the narrative.\n\n" + draft}],
+    )
+    return msg.content[0].text
 
 
 def refine_notice(draft: str) -> str:

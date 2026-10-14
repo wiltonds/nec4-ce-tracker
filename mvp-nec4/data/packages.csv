@@ -1,0 +1,8 @@
+package_id,package,keywords
+UTIL,Utilities & works by Others,openreach;bt ;btor;fibre;ssen;scottish water;sw main;utilit;qts;network rail;power supply;uncharted services;statutory undertaker;cable;apparatus;diversion;undertrack
+STRUCT,Structures & heritage,bridge;culvert;retaining wall; rw ;listed;lb5574;lb 5574;heritage;parapet;sheet pil;piling;structural;abutment;soil nail;headwall
+EARTH,"Earthworks, drainage & ground",earthwork;drainage;ground condition;topsoil;excavat;geotech;rock;dewater;run-off;run off;ditch;physical condition;topograph;filter drain;soil
+ENV,Environment & ecology,ecolog;inns;balsam;bat ;bats;fish;otter;badger;water quality;wqm;tree fell;felling;nesting;sepa;pws;private water;invasive;species;naturescot;noise;vibration;windthrow;car licen
+LAND,"Land, access & consents",landowner;access;cpo;land ;farm;consent;licen;pkc;council;permit;section 61;wayleave;community;boundar;occupier
+SCOPE,"Scope, design & Client decisions",scope;design;tq;client's team;client team;vehicles;contact information;specification;instruction;change to scope;departure;sds;check certificate;assumption;weather
+TM,"Traffic management, ITS & roads",traffic;ttm; tm ;switch; its ;camera;cctv;vms;streetlight;street light;signage;road closure;lane;pavement;surfacing;rsa;radar;kerb
