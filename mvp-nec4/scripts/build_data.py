@@ -21,7 +21,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from core.tracker import (DEFAULT_PACKAGES, classify_package, fmt_location,  # noqa: E402
-                          parse_chainage, scrub, set_private_names)
+                          parse_chainage, parse_micro, scrub, set_private_names)
 from core.xer import activities, read_xer  # noqa: E402
 
 DATA = ROOT / "data"
@@ -95,6 +95,7 @@ def build_activities(xer_path: str):
         "start": a.forecast_start.dt.date, "finish": a.forecast_finish.dt.date,
         "planned_start": a.target_start_date.dt.date, "planned_finish": a.target_end_date.dt.date,
         "total_float_days": a.total_float_days.round(1), "status": a.status, "is_milestone": a.is_milestone,
+        "service_package": a.get("service_package", ""),
     })
     out.to_csv(DATA / "activities.csv", index=False)
     code = dict(zip(a.task_id, a.task_code))
@@ -132,7 +133,7 @@ def _match_ce(title, ce):
 
 def _packages():
     f = DATA / "packages.csv"
-    if not f.exists():
+    if not f.exists() or "LEDP" not in f.read_text():
         pd.DataFrame(DEFAULT_PACKAGES).to_csv(f, index=False)
     return pd.read_csv(f)
 
@@ -163,7 +164,7 @@ def build_tracker(ewr_path: str):
         pkg = classify_package(text, pk)
         topic = root[r.ew_id]
         base = {"topic_id": "TOP-" + topic, "package_id": pkg, "location": fmt_location(a, b),
-                "ch_from": a, "ch_to": b, "source": "EW register"}
+                "ch_from": a, "ch_to": b, "source": "EW register", **parse_micro(text)}
         desc = scrub(re.sub(r"\s+", " ", str(r.description)))[:400]
         rows.append({**base, "date": r.notified.date() if pd.notna(r.notified) else None, "ref": r.ew_id,
                      "summary": f"{scrub(str(r.title).strip())} - {desc}", "entry_type": "Early warning raised"})
@@ -182,12 +183,12 @@ def build_tracker(ewr_path: str):
     tr["topic_title"] = tr["topic_id"].str.replace("TOP-", "", regex=False).map(titles)
     # Ledpettie: merge EW-95/EW-146 thread with the CEMAR correspondence
     led = tr["topic_id"].isin(["TOP-EW-95", "TOP-EW-146"])
-    tr.loc[led, ["topic_id", "topic_title", "package_id"]] = ["TOP-LEDPETTIE", "Ledpettie Bridge (LB 5574) condition", "STRUCT"]
+    tr.loc[led, ["topic_id", "topic_title", "package_id"]] = ["TOP-LEDPETTIE", "Ledpettie Bridge (LB 5574) condition", "LEDP"]
     docs = pd.read_csv(DATA / "documents.csv", parse_dates=["doc_date"])
     docs = docs[docs.event_id == "CE-01"]
     docs = docs[~docs.ref.str.startswith("EW-")]  # EW rows already come from the register
     extra = pd.DataFrame({
-        "topic_id": "TOP-LEDPETTIE", "topic_title": "Ledpettie Bridge (LB 5574) condition", "package_id": "STRUCT",
+        "topic_id": "TOP-LEDPETTIE", "topic_title": "Ledpettie Bridge (LB 5574) condition", "package_id": "LEDP",
         "location": "CH 1600", "ch_from": 1600, "ch_to": 1600, "source": "CEMAR", "date": docs.doc_date.dt.date,
         "ref": docs.ref, "summary": docs.summary, "entry_type": docs.doc_type})
     tr = pd.concat([tr, extra], ignore_index=True)
@@ -223,11 +224,246 @@ def build_ew_scan(ewr_path: str):
     print(f"ew_scan.csv: {len(out)} of {len(df)} EWs on Client/Others; {int((out.matched_ce != '').sum())} matched to a CE title")
 
 
+# ---------------------------------------------------------------- PMI register (CEMAR PDFs)
+MONTHS = "January|February|March|April|May|June|July|August|September|October|November|December"
+DATE_IN_TEXT = re.compile(rf"\b(?:\d{{1,2}}(?:st|nd|rd|th)?\s+)?(?:{MONTHS}|(?:Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*)\s+20\d\d\b"
+                          r"|(?<![\d.])(?:0[1-9]|[12]\d|3[01])[./](?:0[1-9]|1[0-2])[./](?:20)?2\d(?![\d.])"
+                          r"|\b[A-Z][a-z]{2}, \d{2}-[A-Z][a-z]{2}-20\d\d\b")
+FOOTER = re.compile(r"^\s*[A-Z][a-z]{2}, \d{2}-[A-Z][a-z]{2}-\d{4} \d{2}:\d{2}\s+\d+ of \d+\s*$", re.M)
+
+
+def _refs(prefix, text, exclude=""):
+    out = sorted({f"{prefix}-{int(n)}" for n in re.findall(rf"\b{prefix}[- ]?0*(\d+)\b", text)} - {exclude},
+                 key=lambda s: int(s.split("-")[1]))
+    return ";".join(out)
+
+
+def _pmi_kind(title, body):
+    t = title.lower()
+    if "revised quotation" in t:
+        return "Revised quotation request (cl. 62.3)"
+    if "submit quotation" in t:
+        return "Quotation request (cl. 61.2)"
+    if "proposed instruction" in t:
+        return "Proposed instruction (cl. 65.1)"
+    if "change to scope" in t or "scope is changed" in body.lower() or re.search(r"clause 14\.3", body):
+        return "Change to Scope (cl. 14.3)"
+    return "Other instruction"
+
+
+def parse_pmi(text: str, pk: pd.DataFrame) -> dict:
+    lines = text.splitlines()
+    n = re.search(r"PMI-(\d+)", text)
+    date = re.search(r"Date\s+([A-Z][a-z]{2}, \d{2}-[A-Z][a-z]{2}-\d{4})", text)
+    title, start = "", 0
+    for i, ln in enumerate(lines):
+        if re.search(r"Project Manager.s Instruction PMI-\d+\s*$", ln):
+            title, start = lines[i + 1].strip(), i + 2
+            break
+        m = re.match(r"\s*PMI-\d+:\s*(.+)", ln)
+        if m:  # proposed instruction layout: "PMI-76: Instruction to submit ... PI-1" + "PI-1: <title>"
+            nxt = lines[i + 1].strip()
+            title, start = f"{m.group(1).strip()} - {nxt.split(':', 1)[-1].strip()}", i + 2
+            break
+    body = "\n".join(lines[start:])
+    body = body.split("Yours faithfully")[0]
+    body = FOOTER.sub("", body)
+    flat = re.sub(r"\s+", " ", body).strip()
+    full = f"{title} {flat}"
+    pkg = classify_package(title, pk)
+    if pkg == "OTHER":
+        pkg = classify_package(full, pk)
+    a, b = parse_chainage(full)
+    micro = parse_micro(full)
+    kind = _pmi_kind(title, flat)
+    clause = re.search(r"[Cc]l(?:ause|\.)\s*(\d+(?:\.\d+)*)", full)
+    ce_title = re.search(r"entitled:\s*(.+?)\.\s*I confirm", flat)
+    due = re.search(r"due by:?\s*([A-Z][a-z]{2}, \d{2}-[A-Z][a-z]{2}-\d{4})", flat)
+    dates = DATE_IN_TEXT.findall(flat)
+    date_change = kind.startswith(("Change to Scope", "Other")) and bool(dates) and bool(
+        re.search(r"programmed|completion of|access|period|from .* to |text to be added|revised date|no longer", flat, re.I))
+    no_effect = bool(re.search(r"no effect (?:up)?on Defined Cost or Completion", flat, re.I))
+    return {
+        "pmi": f"PMI-{n.group(1)}" if n else "", "date": pd.to_datetime(date.group(1), format="%a, %d-%b-%Y").date() if date else None,
+        "title": scrub(title), "kind": kind, "clause": clause.group(1) if clause else "",
+        "package_id": pkg, "location": fmt_location(a, b), "ch_from": a, "ch_to": b, **micro,
+        "ce_refs": _refs("CE", full), "ew_refs": _refs("EW", full), "gc_refs": _refs("GC", full),
+        "pmi_refs": _refs("PMI", full, exclude=f"PMI-{n.group(1)}" if n else ""), "pi_refs": _refs("PI", full),
+        "ce_title": scrub(ce_title.group(1)) if ce_title else "",
+        "quotation_due": pd.to_datetime(due.group(1), format="%a, %d-%b-%Y").date() if due else None,
+        "date_change": date_change, "dates_mentioned": "; ".join(dict.fromkeys(dates))[:200],
+        "no_effect_on_cost_or_completion": no_effect, "summary": scrub(flat)[:900],
+    }
+
+
+def build_pmis(pmi_dir: str):
+    """PMI register from the CEMAR PMI PDFs (needs `pdftotext`, from poppler-utils)."""
+    import subprocess
+    pk = _packages()
+    rows = []
+    for f in sorted(Path(pmi_dir).glob("PMI-*.pdf"), key=lambda p: int(re.findall(r"\d+", p.name)[0])):
+        txt = subprocess.run(["pdftotext", "-layout", str(f), "-"], capture_output=True, text=True).stdout
+        rows.append(parse_pmi(txt, pk))
+    pm = pd.DataFrame(rows)
+    pm.to_csv(DATA / "pmi_register.csv", index=False)
+    # CE register as far as the PMIs reveal it (quotation instructions carry the CE title)
+    ce = []
+    for r in pm.itertuples():
+        for c in filter(None, r.ce_refs.split(";")):
+            ce.append({"ce": c, "title": r.ce_title if r.kind.startswith(("Quotation", "Revised")) and r.ce_title else "",
+                       "pmi": r.pmi, "date": r.date, "package_id": r.package_id,
+                       "quotation_due": r.quotation_due})
+    ce = pd.DataFrame(ce)
+    if not ce.empty:
+        ce["quotation_due"] = pd.to_datetime(ce["quotation_due"], errors="coerce")
+        ce["date"] = pd.to_datetime(ce["date"], errors="coerce")
+        ce = (ce.sort_values("date").groupby("ce", as_index=False)
+              .agg(title=("title", lambda s: next((x for x in s if x), "")), first_seen=("date", "min"),
+                   pmis=("pmi", lambda s: ";".join(dict.fromkeys(s))), package_id=("package_id", "first"),
+                   last_quotation_due=("quotation_due", "max")))
+        ce["n"] = ce.ce.str.extract(r"(\d+)").astype(int)
+        ce = ce.sort_values("n").drop(columns="n")
+    ce.to_csv(DATA / "cemar_ce.csv", index=False)
+    print(f"pmi_register.csv: {len(pm)} PMIs ({pm.kind.value_counts().to_dict()}); "
+          f"{int(pm.date_change.sum())} with date changes; cemar_ce.csv: {len(ce)} CEs")
+
+
+# ---------------------------------------------------------------- full EW register + EW -> PMI -> CE chain
+def _ew_frame(ewr_path):
+    df = pd.read_excel(ewr_path, sheet_name="EW Register", header=2).iloc[:, :8]
+    df.columns = ["ew_id", "topic", "title", "description", "notified", "status", "notes", "actions"]
+    df = df[df.ew_id.astype(str).str.startswith("EW-")].copy()
+    df["ew_id"] = df.ew_id.str.replace(" ", "")
+    df["notified"] = pd.to_datetime(df["notified"], errors="coerce", dayfirst=True)
+    for c in ["title", "description", "notes", "actions"]:
+        df[c] = df[c].fillna("").astype(str)
+    return df
+
+
+def build_ew_register(ewr_path: str):
+    """Every EW (open and closed) with 'absorbed by' for closed ones."""
+    pk = _packages()
+    df = _ew_frame(ewr_path)
+    ids = set(df.ew_id)
+    further = {}
+    for r in df.itertuples():
+        m = re.search(r"further to\s*ew[- ]?0*(\d+)", r.description, re.I)
+        if m:
+            further.setdefault(f"EW-{m.group(1)}", r.ew_id)
+    closes = {}  # "agreed to close EW-111" written in another EW's notes
+    for r in df.itertuples():
+        for m in re.finditer(r"close\s+(?:the\s+)?EW[- ]?0*(\d+)", r.notes + " " + r.actions, re.I):
+            tgt = f"EW-{m.group(1)}"
+            if tgt != r.ew_id:
+                closes[tgt] = r.ew_id
+    rows = []
+    for r in df.itertuples():
+        text = f"{r.title} {r.description}"
+        a, b = parse_chainage(text)
+        notes = re.sub(r"\s+", " ", f"{r.notes} {r.actions}").strip()
+        closed = bool(re.search(r"clos", str(r.status), re.I))
+        absorbed = ""
+        if closed:
+            m = re.search(r"(?:(?:discussed|discussions?)\s+(?:under|on|in)|see|covered\s+(?:by|under)|captured\s+(?:in|under)|"
+                          r"transferred\s+to|superseded\s+by)\s+EW[- ]?0*(\d+)", notes, re.I)
+            if r.ew_id in closes:
+                absorbed = closes[r.ew_id]
+            elif m and f"EW-{m.group(1)}" != r.ew_id and f"EW-{m.group(1)}" in ids:
+                absorbed = f"EW-{m.group(1)}"
+            elif r.ew_id in further:
+                absorbed = further[r.ew_id]
+            ce = _refs("CE", notes)
+            pmi = _refs("PMI", notes)
+            absorbed = ";".join(x for x in [absorbed, pmi, ce] if x)
+        last = NOTE_SPLIT.split(r.notes)
+        last_note = scrub(re.sub(r"\s+", " ", last[2] if len(last) > 2 else r.notes)).strip()[:300]
+        reason = ""
+        if closed:
+            low = notes.lower()
+            reason = ("Absorbed by " + absorbed) if absorbed else (
+                "Event passed / no further impact" if re.search(r"no further|event has passed|passed|no longer|resolved", low)
+                else "Closed (reason not recorded)")
+        rows.append({"ew_id": r.ew_id, "title": scrub(r.title.strip()), "register_topic": r.topic,
+                     "notified": r.notified.date() if pd.notna(r.notified) else None, "status": r.status,
+                     "package_id": classify_package(text, pk), "location": fmt_location(a, b), "ch_from": a, "ch_to": b,
+                     **parse_micro(text), "further_to": next((k for k, v in further.items() if v == r.ew_id), ""),
+                     "absorbed_by": absorbed, "close_reason": reason,
+                     "ce_refs": _refs("CE", notes + " " + r.description), "pmi_refs": _refs("PMI", notes + " " + r.description),
+                     "last_note": last_note})
+    out = pd.DataFrame(rows)
+    out.to_csv(DATA / "ew_register.csv", index=False)
+    print(f"ew_register.csv: {len(out)} EWs; closed {int(out.close_reason.ne('').sum())}, "
+          f"absorbed {int(out.absorbed_by.ne('').sum())}")
+
+
+STOPW = set("the and for with from change scope works work delay delays ltd s100 s320 s350 s2805 contract drawings "
+            "instruction submit quotation quotations revised reply potential impact early warning".split())
+
+
+def _ttok(s):
+    return {w for w in re.findall(r"[a-z0-9]+", str(s).lower()) if len(w) > 2 and w not in STOPW}
+
+
+def _sim(a, b):
+    a, b = _ttok(a), _ttok(b)
+    return len(a & b) / len(a | b) if a and b else 0.0
+
+
+def build_chain():
+    """EW -> PMI -> CE chain for every EW, with the coverage verdict used by the app."""
+    ew = pd.read_csv(DATA / "ew_register.csv", keep_default_na=False)
+    pm = pd.read_csv(DATA / "pmi_register.csv", keep_default_na=False)
+    cc = pd.read_csv(DATA / "cemar_ce.csv", keep_default_na=False) if (DATA / "cemar_ce.csv").exists() else pd.DataFrame(columns=["ce", "title"])
+    p6 = pd.read_csv(DATA / "ce_record.csv", keep_default_na=False)
+    scan = pd.read_csv(DATA / "ew_scan.csv", keep_default_na=False).set_index("ew_id")["matched_ce"].to_dict()
+    rows = []
+    for e in ew.itertuples():
+        pmis, how = {}, {}
+        for p in pm.itertuples():
+            explicit = e.ew_id in p.ew_refs.split(";") or p.pmi in e.pmi_refs.split(";")
+            s = _sim(e.title, p.title)
+            if explicit or s >= 0.34:
+                pmis[p.pmi] = p
+                how[p.pmi] = "explicit" if explicit else f"title match {s:.0%}"
+        ces = {c: "EW notes" for c in filter(None, e.ce_refs.split(";"))}
+        for p in pmis.values():
+            for c in filter(None, p.ce_refs.split(";")):
+                ces.setdefault(c, f"via {p.pmi}")
+        for c in cc.itertuples():
+            if c.title and _sim(e.title, c.title) >= 0.4:
+                ces.setdefault(c.ce, "CEMAR CE title match")
+        p6ce = scan.get(e.ew_id, "")
+        if not p6ce:
+            best = max(((x.ce_ref, _sim(e.title, x.title)) for x in p6.itertuples()), key=lambda t: t[1], default=("", 0))
+            p6ce = best[0] if best[1] >= 0.5 else ""
+        if p6ce:
+            ces.setdefault(f"P6 {p6ce}", "P6 CE record")
+        closed = e.close_reason != ""
+        if ces:
+            cov = "Covered by CE"
+        elif pmis:
+            cov = "PMI issued - check CE"
+        elif closed and e.absorbed_by:
+            cov = "Absorbed (" + e.absorbed_by + ")"
+        elif closed:
+            cov = "Closed - no CE"
+        else:
+            cov = "Gap - no PMI/CE (opportunity)"
+        rows.append({"ew_id": e.ew_id, "title": e.title, "status": e.status, "notified": e.notified,
+                     "package_id": e.package_id, "absorbed_by": e.absorbed_by,
+                     "pmis": ";".join(pmis), "pmi_link": ";".join(f"{k}:{v}" for k, v in how.items()),
+                     "ces": ";".join(ces), "ce_link": ";".join(f"{k}:{v}" for k, v in ces.items()), "coverage": cov})
+    out = pd.DataFrame(rows)
+    out.to_csv(DATA / "chain.csv", index=False)
+    print("chain.csv:", out.coverage.str.split(" \\(").str[0].value_counts().to_dict())
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--xer")
     ap.add_argument("--ewr")
-    ap.add_argument("--names", help="text file with one personal name per line to redact (keep outside the repo)")
+    ap.add_argument("--pmis", help="folder with the CEMAR PMI PDFs (PMI-<n>_Instruction.pdf)")
+    ap.add_argument("--names",help="text file with one personal name per line to redact (keep outside the repo)")
     args = ap.parse_args()
     if args.names:
         set_private_names(Path(args.names).read_text(encoding="utf-8").splitlines())
@@ -237,3 +473,8 @@ if __name__ == "__main__":
     if args.ewr:
         build_ew_scan(args.ewr)
         build_tracker(args.ewr)
+        build_ew_register(args.ewr)
+    if args.pmis:
+        build_pmis(args.pmis)
+    if args.ewr or args.pmis:
+        build_chain()

@@ -1,0 +1,48 @@
+ce,title,first_seen,pmis,package_id,last_quotation_due
+CE-5,Change to Scope: Vehicles for the Client's team,2025-10-03,PMI-5;PMI-6;PMI-14;PMI-22,OTHER,2025-12-17
+CE-6,Guay Farmhouse Access ,2025-10-23,PMI-11,GUAY,2025-11-13
+CE-7,Change to Scope: S 350 Appendix A Kerbing,2025-10-22,PMI-9;PMI-10;PMI-23;PMI-32,GUAY,2026-02-19
+CE-13,Change to Scope: Works by Others,2025-11-14,PMI-18;PMI-19;PMI-30;PMI-37;PMI-47;PMI-48;PMI-54,OTHER,2026-05-22
+CE-14,Change to Scope: S 2805 & S 3000 - Vehicles for the Client's team,2025-11-17,PMI-21;PMI-20;PMI-24,OTHER,2026-01-01
+CE-17,Change to Scope: S 2805 - Mobile smart phones,2025-12-12,PMI-25;PMI-26;PMI-33,OTHER,2026-02-20
+CE-19,December Weather ,2026-01-14,PMI-31,OTHER,2026-02-04
+CE-21,Uncharted Services - Water Supply CH7+710 Southbound ,2026-02-04,PMI-34;PMI-44,OTHER,2026-04-01
+CE-22,Change to Scope: Septic Tank at Haugh of Kilmorich,2026-02-04,PMI-36;PMI-35,OTHER,2026-02-25
+CE-24,Scottish Water Trial Holes ,2026-02-19,PMI-38;PMI-49,SW,2026-04-15
+CE-26,Change to Scope: S 320 and S 350 - Concrete,2026-02-20,PMI-39;PMI-40,OTHER,2026-03-13
+CE-27,Tree Felling Stand Down near Haugh of Kilmorlich,2026-02-25,PMI-41,OTHER,2026-03-18
+CE-29,Change to Scope: Equipment for the Client's Team,2026-03-02,PMI-42;PMI-43;PMI-51;PMI-59,OTHER,2026-06-04
+CE-30,PS03-SSEN-0304 (Dowally) ,2026-03-18,PMI-46,SSEN,2026-04-08
+CE-34,Physical Conditions Topographical Discrepancies ,2026-05-11,PMI-58,TOPO,2026-06-01
+CE-37,CE-13 Corrected Assumption - Directional Drilling and Associated Works,2026-03-19,PMI-47;PMI-54;PMI-98,OTHER,2026-10-01
+CE-38,UTX Delays ,2026-04-02,PMI-50;PMI-88,OTHER,2026-09-03
+CE-40,Change to Scope: S 320/S 2805 & Contract Drawings - Structural Finishes,2026-04-15,PMI-52;PMI-53,OTHER,2026-05-06
+CE-43,Concrete Obstructions - Guay NB CH4645,2026-05-05,PMI-57,GUAY,2026-05-26
+CE-44,DS-87 Rejection ,2026-05-18,PMI-65,OTHER,2026-06-08
+CE-45,Topographical Discrepancies Guay East CH4250-5200,2026-05-19,PMI-66,GUAY,2026-06-09
+CE-46,Change to Scope: S 350 Access/Junction Design Vehicles,2026-05-05,PMI-56;PMI-55,OTHER,2026-05-26
+CE-48,April Weather ,2026-05-18,PMI-64,OTHER,2026-06-08
+CE-49,Change to Scope: S 320 - Bee Boxes,2026-05-15,PMI-62;PMI-63,OTHER,2026-06-05
+CE-51,Change to Scope: S 2805 & Contract Drawings - Reference Point A38 ,2026-06-03,PMI-68;PMI-67,OTHER,2026-06-24
+CE-53,Concrete Obstructions - CH1500 S/B,2026-06-10,PMI-69,OTHER,2026-07-01
+CE-54,Change to Scope: S 905 - Traffic Management for Openreach P03-BT-0301 Phase 1,2026-06-12,PMI-70;PMI-71;PMI-97,BT,
+CE-56,Asbestos-Containing Waste CH4270 N/B,2026-06-22,PMI-73,OTHER,2026-07-13
+CE-57,Asbestos containing Waste CH7150 S/B & CH6630 N/B,2026-06-22,PMI-74,OTHER,2026-07-13
+CE-64,Topographical Discrepancies ,2026-07-16,PMI-80,TOPO,2026-08-06
+CE-65,PM Assumption: Guay Farmhouse,2026-07-08,PMI-77;PMI-111,GUAY,2026-10-30
+CE-67,works by others - Fencing and associated works ,2026-07-15,PMI-79;PMI-87,OTHER,2026-09-03
+CE-68,works by others - Directional Drilling ,2026-07-15,PMI-78;PMI-87,OTHER,2026-09-03
+CE-70,June Weather ,2026-07-23,PMI-82,OTHER,2026-08-13
+CE-72,PMI-81,2026-07-28,PMI-83,OTHER,2026-08-18
+CE-77,Correction of PM Assumptions: CE-67 + CE-68,2026-08-13,PMI-87,OTHER,2026-09-03
+CE-78,Change to Scope: Supervision for Openreach P03-BT-0301 Phase 1 ,2026-08-21,PMI-89;PMI-90,BT,2026-09-11
+CE-79,Kindallachan Outfall ,2026-09-01,PMI-92,OTHER,2026-09-22
+CE-80,Dowally Bridge uncharted service ,2026-10-08,PMI-109,OTHER,2026-10-29
+CE-86,,2026-09-10,PMI-96,OTHER,
+CE-87,CE-54 Corrected Assumptions - Traffic Management for Openreach P03-BT-0301 Phase 1,2026-09-10,PMI-97,BT,
+CE-88,CE-37 Corrected Assumption - BT Changeover Fibre Cables,2026-09-10,PMI-98,BT,2026-10-01
+CE-90,Correction of PM Assumptions: CE- 77,2026-09-17,PMI-99,OTHER,2026-10-08
+CE-91,Change to Scope: S 350 Appendix A - NMU Construction Detail,2026-09-17,PMI-103;PMI-104,OTHER,2026-10-08
+CE-92,Failure to respond to communications within the period for reply (GC-1332 & TQ-124),2026-09-23,PMI-105,OTHER,2026-10-14
+CE-93,September Weather ,2026-10-08,PMI-110,OTHER,2026-10-29
+CE-94,"Change to Scope: S 350/S 2805 & Contract Drawings - A60, N42, BS04",2026-10-08,PMI-107;PMI-108,OTHER,2026-10-29

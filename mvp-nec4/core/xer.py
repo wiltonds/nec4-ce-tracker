@@ -41,6 +41,19 @@ def activities(tables: dict) -> pd.DataFrame:
     if wbs is not None:
         names = dict(zip(wbs["wbs_id"], wbs["wbs_name"]))
         t["wbs"] = t["wbs_id"].map(names)
+        parent = dict(zip(wbs["wbs_id"], wbs["parent_wbs_id"]))
+
+        def _path(i):
+            p = []
+            while i in names and len(p) < 20:
+                p.append(names[i])
+                i = parent.get(i)
+            return p[::-1][1:]  # drop the project root node
+
+        paths = {i: _path(i) for i in t["wbs_id"].unique()}
+        t["wbs_path"] = t["wbs_id"].map(lambda i: " > ".join(paths.get(i, [])))
+        # P6 "service package" = first two WBS levels under the project (e.g. "Construction > Bridges")
+        t["service_package"] = t["wbs_id"].map(lambda i: " > ".join(paths.get(i, [])[:2]))
     t["total_float_days"] = pd.to_numeric(t.get("total_float_hr_cnt"), errors="coerce") / 8
     t["forecast_start"] = t["act_start_date"].fillna(t.get("restart_date")).fillna(t.get("early_start_date"))
     t["forecast_finish"] = t["act_end_date"].fillna(t.get("reend_date")).fillna(t.get("early_end_date"))

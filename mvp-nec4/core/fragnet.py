@@ -11,20 +11,22 @@ from datetime import date, timedelta
 
 import pandas as pd
 
+_UTIL = [("Others complete outstanding apparatus works", 28, "Others"),
+         ("Confirmation and handover of work area to Contractor", 7, "Others")]
 DEFAULT_STEPS = {
-    "STRUCT": [("PM instruction / change to the Scope (cl. 14.3)", 14, "Client"),
-               ("Statutory consent application and determination", 56, "Others"),
-               ("Temporary works redesign, check and PM acceptance", 42, "Contractor")],
-    "UTIL": [("Others complete outstanding utility works", 28, "Others"),
-             ("Confirmation and handover of work area to Contractor", 7, "Others")],
-    "ENV": [("Licence / survey / mitigation completed", 28, "Others"),
-            ("PM acceptance of revised plan", 14, "Client")],
-    "LAND": [("Access / consent granted", 28, "Client")],
-    "SCOPE": [("PM decision / instruction", 14, "Client"),
-              ("Revised design and PM acceptance", 28, "Contractor")],
-    "TM": [("Approval of traffic management / ITS arrangements", 21, "Client")],
-    "EARTH": [("Investigation and revised design", 28, "Contractor"),
-              ("PM acceptance", 14, "Client")],
+    "BT": _UTIL, "SW": _UTIL, "SSEN": _UTIL,
+    "LEDP": [("PM instruction / change to the Scope (cl. 14.3)", 14, "Client"),
+             ("Statutory consent application and determination", 56, "Others"),
+             ("Temporary works redesign, check and PM acceptance", 42, "Contractor")],
+    "GUAY": [("Client / Others complete Guay Farmhouse works and access", 28, "Client"),
+             ("Handover of area to Contractor", 7, "Client")],
+    "TOPO": [("Topographical survey / data corrected", 21, "Client"),
+             ("Revised design and PM acceptance", 28, "Contractor")],
+    "BEAVER": [("Licence and mitigation agreed (NatureScot)", 42, "Others"),
+               ("Mitigation implemented and area released", 14, "Contractor")],
+    "ITS": [("Client decision / approval of ITS arrangements", 21, "Client"),
+            ("Revised ITS design and acceptance", 21, "Contractor")],
+    "SURVEY": [("Survey control data provided / verified", 14, "Client")],
     "OTHER": [("Resolution by Client / Others", 21, "Client")],
 }
 KEY_TYPES = {"Early warning raised", "PM Reply", "Correspondence", "Technical Report", "Missed reply",
@@ -134,6 +136,39 @@ def impact(acts: pd.DataFrame, rels: pd.DataFrame, impacted: list[str], release:
     res["finish"] = pd.to_datetime(res["finish"]).dt.date
     res["new_finish"] = [f + timedelta(days=int(d)) for f, d in zip(res["finish"], res["delay_days"])]
     return res.reset_index().sort_values(["delay_days", "finish"], ascending=[False, True])
+
+
+def time_or_cost(acts: pd.DataFrame, impacted: list[str], release: date, imp: pd.DataFrame):
+    """Classify the event as 'Time + cost' or 'Cost only (absorbed by float)'.
+
+    Per tie-in activity: delay at tie-in = release - planned start; it is absorbed when it does not exceed the
+    activity's total float. Any delay to a Completion milestone (KMC*) or beyond float means time + cost.
+    """
+    a = acts.set_index("task_code")
+    rows = []
+    for c in impacted:
+        if c not in a.index:
+            continue
+        s = pd.to_datetime(a.loc[c, "start"]).date()
+        tf = a.loc[c, "total_float_days"]
+        tf = 0.0 if pd.isna(tf) else float(tf)
+        d = max(0, (release - s).days + 1) if a.loc[c, "status"] != "Complete" else 0
+        rows.append({"task_code": c, "task_name": a.loc[c, "task_name"], "planned_start": s, "delay_at_tie_in": d,
+                     "total_float_days": tf, "absorbed_by_float": d <= tf,
+                     "service_package": a.loc[c, "service_package"] if "service_package" in a.columns else ""})
+    det = pd.DataFrame(rows)
+    kmc = imp[imp["task_code"].astype(str).str.startswith("KMC")] if len(imp) else imp
+    if det.empty:
+        return "Not assessed (no programme activity linked)", det
+    if len(kmc):
+        return f"Time + cost (Completion moves about {int(kmc['delay_days'].max())} days)", det
+    if (~det["absorbed_by_float"]).any():
+        days = int((det["delay_at_tie_in"] - det["total_float_days"]).max())
+        return (f"Time + cost on the linked work and milestones (about {days} days beyond float; Completion not moved "
+                "on the current logic)"), det
+    if (det["delay_at_tie_in"] == 0).all():
+        return "No delay (constraint removed before the planned start)", det
+    return "Cost only (delay absorbed by float)", det
 
 
 def to_p6_xlsx(fragnet: pd.DataFrame, wbs_hint: str = "") -> bytes:

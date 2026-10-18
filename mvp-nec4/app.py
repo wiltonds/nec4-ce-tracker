@@ -10,11 +10,12 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from core import extractor
-from core.fragnet import DEFAULT_STEPS, KEY_TYPES, build_fragnet, impact, to_p6_xlsx
+from core.fragnet import DEFAULT_STEPS, KEY_TYPES, build_fragnet, impact, time_or_cost, to_p6_xlsx
 from core.narrative import build_narrative
 from core.nec4_rules import RULES, ce_deadline, status_for
 from core.notice import build_notice, to_docx
-from core.tracker import ActivityIndex, classify_package, fmt_location, parse_chainage, scrub
+from core.tracker import (ActivityIndex, classify_package, fmt_location, fmt_micro, parse_chainage, parse_micro,
+                          scrub)
 
 load_dotenv()
 DATA = Path(__file__).parent / "data"
@@ -58,38 +59,102 @@ if "docs" not in st.session_state:
     st.session_state.notified = set()
 
 if "tracker" not in st.session_state:
-    st.session_state.tracker = load_csv("tracker.csv", ["date"]).fillna({"work_package": "", "impacted_activities": "",
-                                                                         "location": ""})
+    _t = load_csv("tracker.csv", ["date"]).copy()
+    for _c in ["work_package", "impacted_activities", "location", "phase", "zone", "direction"]:
+        if _c not in _t:
+            _t[_c] = ""
+        _t[_c] = _t[_c].fillna("").astype(str).str.replace(r"\.0$", "", regex=True)
+    st.session_state.tracker = _t
     st.session_state.packages = load_csv("packages.csv", None)
 
 
 @st.cache_resource
 def programme_data():
     acts = pd.read_csv(DATA / "activities.csv")
+    if "service_package" not in acts:
+        acts["service_package"] = ""
+    acts["service_package"] = acts["service_package"].fillna("")
     rels = pd.read_csv(DATA / "relationships.csv")
     return acts, rels, ActivityIndex(acts)
+
+
+@st.cache_data
+def registers():
+    """PMI register, full EW register and EW -> PMI -> CE chain (built by scripts/build_data.py)."""
+    def _r(name, dates):
+        f = DATA / name
+        return pd.read_csv(f, parse_dates=dates, keep_default_na=False) if f.exists() else pd.DataFrame()
+    pmi = _r("pmi_register.csv", ["date"])
+    if len(pmi):
+        pmi["date"] = pd.to_datetime(pmi["date"], errors="coerce")
+        pmi["date_change"] = pmi["date_change"].astype(str).eq("True")
+    ew = _r("ew_register.csv", [])
+    if len(ew):
+        ew["notified"] = pd.to_datetime(ew["notified"], errors="coerce")
+    return pmi, ew, _r("chain.csv", []), _r("cemar_ce.csv", [])
+
+
+@st.cache_data(max_entries=200)
+def suggest_cached(text: str, ch):
+    return AIDX.suggest(text, None if ch is None or pd.isna(ch) else float(ch))
 
 
 docs: pd.DataFrame = st.session_state.docs
 prog: pd.DataFrame = st.session_state.programme
 tracker: pd.DataFrame = st.session_state.tracker
 packages: pd.DataFrame = st.session_state.packages
-PKG = dict(zip(packages.package_id, packages.package)) | {"OTHER": "Other"}
+PKG = dict(zip(packages.package_id, packages.package)) | {"OTHER": "Other (unclassified)"}
 ACTS, RELS, AIDX = programme_data()
+PMI, EWR, CHAIN, CEMAR_CE = registers()
+SERVICE = ACTS.set_index("task_code")["service_package"].to_dict()
 ACT_LABEL = {r.task_code: f"{r.task_code} · {r.task_name[:80]}" for r in ACTS.itertuples()}
 
 # ---------- sidebar ----------
 st.sidebar.title("🚧 NEC4 CE Tracker")
 st.sidebar.caption("MVP - delay & compensation event control")
-PAGES = ["Tracker", "Fragnet & narrative", "Ingest documents", "CE dashboard", "Timeline", "EW scan",
-         "Draft notification", "NEC4 rules"]
+PAGES = ["Tracker", "Theme search", "Fragnet & narrative", "EW → PMI → CE chain", "PMI register",
+         "Ingest documents", "CE dashboard", "Timeline", "EW scan", "Draft notification", "NEC4 rules"]
 if st.session_state.get("goto") in PAGES:
     st.session_state["nav"] = st.session_state.pop("goto")
 page = st.sidebar.radio("Go to", PAGES, key="nav")
+
+st.sidebar.markdown("**Filters (apply to all tabs)**")
+_chs = tracker["ch_from"].dropna()
+CH_MAX = int(_chs.max()) + 100 if len(_chs) else 12000
+F_PKG = st.sidebar.multiselect("Main topic / package", list(PKG), format_func=lambda k: PKG[k], key="f_pkg")
+F_TXT = st.sidebar.text_input("Search text / reference", key="f_txt")
+F_CH = st.sidebar.slider("Location (chainage, m)", 0, CH_MAX, (0, CH_MAX), step=50, key="f_ch")
+F_CH_ON = F_CH != (0, CH_MAX)
+
+
+def apply_filters(df: pd.DataFrame) -> pd.DataFrame:
+    v = df
+    if F_PKG:
+        v = v[v["package_id"].isin(F_PKG)]
+    if F_TXT:
+        v = v[v["summary"].str.contains(F_TXT, case=False, na=False) | v["ref"].str.contains(F_TXT, case=False, na=False)
+              | v["topic_title"].str.contains(F_TXT, case=False, na=False)]
+    if F_CH_ON:
+        v = v[v["ch_from"].between(*F_CH) | v["ch_to"].between(*F_CH)]
+    return v
+
+
+def filter_note():
+    parts = []
+    if F_PKG:
+        parts.append("topic: " + ", ".join(PKG[k] for k in F_PKG))
+    if F_TXT:
+        parts.append(f"text: '{F_TXT}'")
+    if F_CH_ON:
+        parts.append(f"CH {F_CH[0]}-{F_CH[1]}")
+    if parts:
+        st.info("Filtered by " + " · ".join(parts) + " (change in the sidebar).")
 today = st.sidebar.date_input("Reference date", date.today(), help="Change to simulate another day.")
 contract = st.sidebar.text_input("Contract", "A9 Dualling - Tay Crossing to Ballinluig (NEC4 ECC)")
 ai_on = bool(extractor.os.getenv("ANTHROPIC_API_KEY"))
 st.sidebar.markdown(f"**AI extraction:** {'🟢 on (' + extractor.MODEL + ')' if ai_on else '⚪ off - keyword rules'}")
+st.sidebar.caption("If the page shows 'Connecting…' or goes blank, reload it (F5). Edits made in the session are "
+                   "kept only until reload - download the tracker CSV to keep them.")
 st.sidebar.caption("Data: A9 project exports (P6 programme rev 017, CEMAR correspondence, EW register of 01 Oct 2026). "
                    "Pseudonymised: roles only, no personal names.")
 
@@ -125,14 +190,26 @@ def event_table() -> pd.DataFrame:
 COLOR = {"red": "🔴", "orange": "🟠", "green": "🟢"}
 
 # ---------- pages ----------
+def _first(s):
+    return next((x for x in s if isinstance(x, str) and x and x != "nan"), "")
+
+
+def service_of(codes: str) -> str:
+    """Level 2 of the classification: P6 service package(s) of the linked activities."""
+    sp = [SERVICE.get(c, "") for c in str(codes).split(";") if c]
+    return "; ".join(dict.fromkeys(x for x in sp if x))
+
+
 def topic_table(tr: pd.DataFrame) -> pd.DataFrame:
     g = tr.groupby("topic_id")
     out = pd.DataFrame({
         "topic": g["topic_title"].first(), "package": g["package_id"].first().map(PKG),
+        "micro": [fmt_micro(_first(x.phase), _first(x.zone), _first(x.direction)) for _, x in g],
         "location": g["location"].agg(lambda s: next((x for x in s if isinstance(x, str) and x), "")),
         "first_fact": g["date"].min().dt.date, "last_fact": g["date"].max().dt.date, "facts": g.size(),
         "impacted_activities": g["impacted_activities"].agg(lambda s: next((x for x in s if isinstance(x, str) and x), "")),
     }).reset_index()
+    out["service_package"] = out["impacted_activities"].map(service_of)
     out["days_since_last_fact"] = out["last_fact"].map(lambda d: (today - d).days if pd.notna(d) else None)
     return out.sort_values("last_fact", ascending=False)
 
@@ -141,30 +218,15 @@ if page == "Tracker":
     st.title("Delay tracker")
     st.caption("Every fact recorded, classified by package, work package and location, grouped into topics. "
                "Select a topic to see its history or turn it into a fragnet.")
+    fv = apply_filters(tracker)
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Facts recorded", len(tracker))
-    c2.metric("Topics", tracker["topic_id"].nunique())
-    recent = tracker[tracker["date"].dt.date >= today - timedelta(days=30)]
-    c3.metric("Facts in last 30 days", len(recent))
-    c4.metric("Topics linked to programme", int((topic_table(tracker)["impacted_activities"] != "").sum()))
+    c1.metric("Facts recorded", len(fv))
+    c2.metric("Topics", fv["topic_id"].nunique())
+    c3.metric("Facts in last 30 days", int((fv["date"].dt.date >= today - timedelta(days=30)).sum()))
+    c4.metric("Topics linked to programme", int((topic_table(fv)["impacted_activities"] != "").sum()) if len(fv) else 0)
 
-    with st.expander("Filters", expanded=True):
-        f1, f2, f3 = st.columns([2, 2, 3])
-        pk_sel = f1.multiselect("Package", list(PKG), format_func=lambda k: PKG[k])
-        txt = f2.text_input("Search text / reference")
-        chs = tracker["ch_from"].dropna()
-        ch_rng = f3.slider("Location (chainage, m)", 0, int(chs.max() if len(chs) else 10000) + 100,
-                           (0, int(chs.max() if len(chs) else 10000) + 100), step=50)
-        only_loc = f3.checkbox("Only facts with a location", value=False)
-    v = tracker.copy()
-    if pk_sel:
-        v = v[v["package_id"].isin(pk_sel)]
-    if txt:
-        v = v[(v["summary"].str.contains(txt, case=False, na=False)) | (v["ref"].str.contains(txt, case=False, na=False))
-              | (v["topic_title"].str.contains(txt, case=False, na=False))]
-    if only_loc or ch_rng != (0, int(chs.max() if len(chs) else 10000) + 100):
-        v = v[v["ch_from"].between(*ch_rng)]
-
+    filter_note()
+    v = apply_filters(tracker)
     by_pkg = v.drop_duplicates("topic_id")["package_id"].map(PKG).value_counts().reset_index()
     by_pkg.columns = ["package", "topics"]
     fig = px.bar(by_pkg, x="topics", y="package", orientation="h", height=260)
@@ -176,10 +238,18 @@ if page == "Tracker":
     ev = st.dataframe(tt, hide_index=True, width="stretch", on_select="rerun", selection_mode="single-row",
                       key="topic_pick", height=320)
     if ev.selection.rows:
-        tid = tt.iloc[ev.selection.rows[0]]["topic_id"]
-        st.session_state["topic_sel"] = tid
+        st.session_state["topic_sel"] = tt.iloc[ev.selection.rows[0]]["topic_id"]
+    tid = st.session_state.get("topic_sel")
+    if tid and tid in tracker["topic_id"].values:
+        if st.button("✖ Clear selected topic"):
+            st.session_state.pop("topic_sel", None)
+            st.rerun()
         sub = tracker[tracker["topic_id"] == tid].sort_values("date")
-        st.markdown(f"**{tid} · {sub['topic_title'].iloc[0]}** — {PKG.get(sub['package_id'].iloc[0])}")
+        st.markdown(f"**{tid} · {sub['topic_title'].iloc[0]}**")
+        st.caption("Classification — **Macro theme:** " + str(PKG.get(sub['package_id'].iloc[0])) +
+                   " · **P6 service package:** " + (service_of(sub['impacted_activities'].iloc[0]) or "link activities below") +
+                   " · **Micro:** " + (fmt_micro(_first(sub.phase), _first(sub.zone), _first(sub.direction),
+                                                  _first(sub.location)) or "-"))
         st.dataframe(sub[["date", "ref", "entry_type", "summary", "location", "source"]].assign(
             date=sub["date"].dt.date), hide_index=True, width="stretch")
         with st.form("edit_topic"):
@@ -188,8 +258,8 @@ if page == "Tracker":
                                    if sub["package_id"].iloc[0] in PKG else 0, format_func=lambda k: PKG[k])
             wp = e2.text_input("Work package impacted", sub["work_package"].iloc[0])
             cur = [c for c in str(sub["impacted_activities"].iloc[0]).split(";") if c in ACT_LABEL]
-            sug = AIDX.suggest(" ".join(sub["topic_title"].astype(str).tolist() + sub["summary"].astype(str).tolist()[:5]),
-                               sub["ch_from"].dropna().iloc[0] if sub["ch_from"].notna().any() else None)
+            sug = suggest_cached(" ".join(sub["topic_title"].astype(str).tolist() + sub["summary"].astype(str).tolist()[:5]),
+                                 sub["ch_from"].dropna().iloc[0] if sub["ch_from"].notna().any() else None)
             opts = list(dict.fromkeys(cur + sug["task_code"].tolist() + list(ACT_LABEL)))
             imp = st.multiselect("Programme activities impacted (suggestions first)", opts, default=cur,
                                  format_func=lambda c: ACT_LABEL.get(c, c))
@@ -228,7 +298,7 @@ if page == "Tracker":
                 ttitle = tnew or fsum[:60]
             else:
                 ttitle = topics.set_index("topic_id").loc[tsel, "topic"]
-            row = {"entry_id": f"T-{len(tracker) + 1:04d}", "topic_id": tsel, "topic_title": ttitle,
+            row = {"entry_id": f"T-{len(tracker) + 1:04d}", "topic_id": tsel, "topic_title": ttitle, **parse_micro(fsum),
                    "package_id": fpk or classify_package(fsum + " " + ttitle, packages), "location": fmt_location(a, b),
                    "ch_from": a, "ch_to": b, "source": fs, "date": pd.Timestamp(fd), "ref": fr,
                    "summary": scrub(fsum), "entry_type": "Correspondence", "work_package": "", "impacted_activities": ""}
@@ -240,22 +310,118 @@ if page == "Tracker":
                        "tracker.csv")
     st.caption("Changes live in this session. Download the CSV to keep them (database persistence is a next step).")
 
+elif page == "Theme search":
+    st.title("Theme search - build one fragnet from several topics")
+    st.caption("Search every fact in the tracker, every PMI and every early warning (open and closed) for a word, a "
+               "place or a reference - e.g. 'beaver', 'Kindallachan', 'CH 6500', 'Guay'. Tick the facts that belong "
+               "to the same delay and send them to the Fragnet as one mixed selection.")
+    q = st.text_input("Search for", st.session_state.get("theme_q", ""), placeholder="beaver, Kindallachan, Guay, GC-1385 ...")
+    st.session_state["theme_q"] = q
+    c1, c2, c3 = st.columns(3)
+    use_tr = c1.checkbox("Tracker facts", True)
+    use_pmi = c2.checkbox("PMIs", True)
+    use_ew = c3.checkbox("EW register (incl. closed)", True)
+    if not q:
+        st.info("Type a word above. The sidebar filters (topic, chainage) also apply to tracker facts.")
+        st.stop()
+    rows = []
+    if use_tr:
+        t = apply_filters(tracker)
+        m = (t["summary"].str.contains(q, case=False, na=False) | t["ref"].str.contains(q, case=False, na=False)
+             | t["topic_title"].str.contains(q, case=False, na=False) | t["location"].str.contains(q, case=False, na=False))
+        for r in t[m].itertuples():
+            rows.append({"date": r.date, "source": "Tracker", "ref": r.ref, "entry_type": r.entry_type,
+                         "summary": r.summary, "topic": f"{r.topic_id} · {r.topic_title}", "package_id": r.package_id,
+                         "status": "", "absorbed_by": ""})
+    if use_pmi and len(PMI):
+        m = PMI["title"].str.contains(q, case=False) | PMI["summary"].str.contains(q, case=False) | PMI["pmi"].eq(q.upper())
+        for r in PMI[m].itertuples():
+            rows.append({"date": r.date, "source": "PMI", "ref": r.pmi, "entry_type": "PM Instruction",
+                         "summary": f"{r.title} - {r.summary[:300]}", "topic": r.kind, "package_id": r.package_id,
+                         "status": "date change" if r.date_change else "", "absorbed_by": r.ce_refs})
+    if use_ew and len(EWR):
+        m = EWR["title"].str.contains(q, case=False) | EWR["last_note"].str.contains(q, case=False) | EWR["ew_id"].eq(q.upper())
+        for r in EWR[m].itertuples():
+            rows.append({"date": r.notified, "source": "EW register", "ref": r.ew_id, "entry_type": "Early warning raised",
+                         "summary": f"{r.title} - {r.last_note}", "topic": r.close_reason or "Open",
+                         "package_id": r.package_id, "status": r.status, "absorbed_by": r.absorbed_by})
+    res = pd.DataFrame(rows)
+    if res.empty:
+        st.warning("Nothing found.")
+        st.stop()
+    res["date"] = pd.to_datetime(res["date"], errors="coerce")
+    res = res.dropna(subset=["date"]).sort_values("date").drop_duplicates(["ref", "date", "summary"])
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Results", len(res))
+    k2.metric("Topics touched", res.loc[res.source == "Tracker", "topic"].nunique())
+    k3.metric("PMIs", int((res.source == "PMI").sum()))
+    k4.metric("Closed EWs", int(((res.source == "EW register") & res.status.str.contains("los", na=False)).sum()))
+    res.insert(0, "include", False)
+    res["date"] = res["date"].dt.date
+    res["package"] = res["package_id"].map(PKG)
+    ed = st.data_editor(res.drop(columns=["package_id"]), hide_index=True, width="stretch", height=420,
+                        key=f"theme_{q}", disabled=[c for c in res.columns if c != "include"],
+                        column_config={"summary": st.column_config.TextColumn(width="large"),
+                                       "absorbed_by": st.column_config.TextColumn("absorbed by / CE")})
+    sel = ed[ed["include"]]
+    st.caption("'absorbed by / CE' shows, for a closed EW, the EW, PMI or CE that took it over; for a PMI, the CE it "
+               "belongs to. Closed EWs stay visible so the full history is not lost.")
+    b1, b2 = st.columns(2)
+    if b1.button(f"Build fragnet from {len(sel)} selected ➜", disabled=sel.empty, type="primary"):
+        pk = res.loc[sel.index, "package_id"].value_counts()
+        st.session_state["mixed"] = {
+            "facts": sel.assign(date=pd.to_datetime(sel["date"]))[["date", "ref", "entry_type", "summary"]],
+            "title": f"Theme: {q}", "package_id": pk.index[0] if len(pk) else "OTHER"}
+        st.session_state["topic_sel"] = "MIXED"
+        st.session_state["goto"] = "Fragnet & narrative"
+        st.rerun()
+    b2.download_button("Download results (CSV)", res.to_csv(index=False).encode(), f"theme_{q}.csv")
+
 elif page == "Fragnet & narrative":
     st.title("Fragnet & monthly narrative")
-    topics = topic_table(tracker)
+    filter_note()
+    topics = topic_table(apply_filters(tracker))
+    mixed = st.session_state.get("mixed")
     default = st.session_state.get("topic_sel", "TOP-LEDPETTIE")
-    ids = topics["topic_id"].tolist()
+    ids = (["MIXED"] if mixed else []) + topics["topic_id"].tolist()
+    if not ids:
+        st.warning("No topic matches the filters in the sidebar.")
+        st.stop()
+    tlab = topics.set_index("topic_id")["topic"].to_dict()
     tid = st.selectbox("Topic", ids, index=ids.index(default) if default in ids else 0,
-                       format_func=lambda t: f"{t} · {topics.set_index('topic_id').loc[t, 'topic']}")
-    sub = tracker[tracker["topic_id"] == tid].sort_values("date").reset_index(drop=True)
-    pkg_id = sub["package_id"].iloc[0]
-    st.caption(f"Package: {PKG.get(pkg_id)} · Location: {topics.set_index('topic_id').loc[tid, 'location'] or '-'} · "
-               f"{len(sub)} facts")
+                       format_func=lambda t: f"🧩 Mixed selection - {mixed['title']}" if t == "MIXED" else f"{t} · {tlab[t]}")
+    st.session_state["topic_sel"] = tid
+    if tid == "MIXED":
+        sub = mixed["facts"].copy().reset_index(drop=True)
+        for c, v in {"topic_title": mixed["title"], "package_id": mixed["package_id"], "impacted_activities": "",
+                     "work_package": "", "ch_from": None, "location": ""}.items():
+            sub[c] = v
+        pkg_id = st.selectbox("Main theme for clauses and default steps", list(PKG), index=list(PKG).index(mixed["package_id"])
+                              if mixed["package_id"] in PKG else 0, format_func=lambda k: PKG[k])
+        loc = ""
+        if st.button("✖ Discard mixed selection"):
+            st.session_state.pop("mixed", None)
+            st.session_state.pop("topic_sel", None)
+            st.rerun()
+    else:
+        sub = tracker[tracker["topic_id"] == tid].sort_values("date").reset_index(drop=True)
+        pkg_id = sub["package_id"].iloc[0]
+        loc = topics.set_index("topic_id").loc[tid, "location"]
+    st.caption(f"Package: {PKG.get(pkg_id)} · Location: {loc or '-'} · {len(sub)} facts")
 
     st.markdown("**1. Facts to include in the fragnet** (record-based activities)")
     facts = sub[["date", "ref", "entry_type", "summary"]].copy()
-    facts.insert(0, "include", sub["entry_type"].isin(KEY_TYPES - {"Meeting note"}) | (len(sub) <= 8))
-    facts["date"] = facts["date"].dt.date
+    facts.insert(0, "include", sub["entry_type"].isin(KEY_TYPES - {"Meeting note"}) | (len(sub) <= 8) | (tid == "MIXED"))
+    if tid != "MIXED" and pkg_id != "OTHER" and len(PMI):
+        rel = PMI[(PMI["package_id"] == pkg_id) & ~PMI["pmi"].isin(facts["ref"])]
+        if len(rel):
+            facts = pd.concat([facts, pd.DataFrame({
+                "include": False, "date": rel["date"], "ref": rel["pmi"], "entry_type": "PM Instruction",
+                "summary": rel["title"] + (" [date change: " + rel["dates_mentioned"] + "]").where(rel["date_change"], "")})],
+                ignore_index=True).sort_values("date")
+            st.caption(f"{len(rel)} PMI(s) on the same theme were added below, unticked. Tick them if they belong to "
+                       "this delay (e.g. a PMI that moved the access date).")
+    facts["date"] = pd.to_datetime(facts["date"]).dt.date
     facts = st.data_editor(facts, hide_index=True, width="stretch", key=f"facts_{tid}",
                            column_config={"summary": st.column_config.TextColumn(width="large")},
                            disabled=["date", "ref", "entry_type"])
@@ -263,15 +429,15 @@ elif page == "Fragnet & narrative":
 
     st.markdown("**2. Programme activities the constraint drives** (tie-in)")
     cur = [c for c in str(sub["impacted_activities"].iloc[0]).split(";") if c in ACT_LABEL]
-    sug = AIDX.suggest(" ".join([str(sub["topic_title"].iloc[0])] + sub["summary"].astype(str).tolist()[:5]),
-                       sub["ch_from"].dropna().iloc[0] if sub["ch_from"].notna().any() else None)
+    sug = suggest_cached(" ".join([str(sub["topic_title"].iloc[0])] + sub["summary"].astype(str).tolist()[:5]),
+                         sub["ch_from"].dropna().iloc[0] if sub["ch_from"].notna().any() else None)
     opts = list(dict.fromkeys(cur + sug["task_code"].tolist() + list(ACT_LABEL)))
     impacted = st.multiselect("Activities", opts, default=cur, format_func=lambda c: ACT_LABEL.get(c, c),
                               key=f"imp_{tid}")
 
     st.markdown("**3. Forecast steps until the constraint is removed** (planner assumptions)")
     steps = pd.DataFrame(DEFAULT_STEPS.get(pkg_id, DEFAULT_STEPS["OTHER"]), columns=["name", "duration_days", "party"])
-    steps = st.data_editor(steps, num_rows="dynamic", hide_index=True, width="stretch", key=f"steps_{tid}")
+    steps = st.data_editor(steps, num_rows="dynamic", hide_index=True, width="stretch", key=f"steps_{tid}_{pkg_id}")
     data_date = st.date_input("Data date for this assessment", today)
 
     if chosen.empty:
@@ -280,7 +446,9 @@ elif page == "Fragnet & narrative":
     fn = build_fragnet(chosen.assign(date=pd.to_datetime(chosen["date"])), steps.dropna(subset=["name"]),
                        impacted, data_date)
     release = fn[fn["type"] != "Tie-in"]["finish"].max()
-    imp = impact(ACTS, RELS, impacted, release) if impacted else pd.DataFrame()
+    imp = impact(ACTS, RELS, impacted, release) if impacted else pd.DataFrame(
+        columns=["task_code", "task_name", "finish", "new_finish", "delay_days", "is_milestone", "total_float_days", "wbs"])
+    verdict, vdet = time_or_cost(ACTS, impacted, release, imp)
 
     st.divider()
     m1, m2, m3, m4 = st.columns(4)
@@ -288,6 +456,16 @@ elif page == "Fragnet & narrative":
     m2.metric("Constraint removed (forecast)", f"{release:%d %b %Y}")
     m3.metric("Programme activities pushed", len(imp))
     m4.metric("Max delay (days)", int(imp["delay_days"].max()) if len(imp) else 0)
+    box = st.error if verdict.startswith("Time") else st.success if verdict.startswith(("Cost", "No delay")) else st.info
+    box(f"**Result: {verdict}.** " + (
+        "The delay goes beyond the float of the linked activities (or moves Completion): claim time (EOT) and cost."
+        if verdict.startswith("Time") else
+        "The float of the linked activities absorbs the delay: Completion does not move, but the extra cost "
+        "(disruption, standing time, resequencing) can still be claimed." if verdict.startswith("Cost") else
+        "Link at least one programme activity in step 2 to assess time vs cost." if verdict.startswith("Not") else ""))
+    if len(vdet):
+        with st.expander("Float check per linked activity"):
+            st.dataframe(vdet, hide_index=True, width="stretch")
 
     g = fn[fn["type"] != "Tie-in"].copy()
     g["bar_end"] = pd.to_datetime(g["finish"]) + pd.Timedelta(days=1)
@@ -313,12 +491,10 @@ elif page == "Fragnet & narrative":
 
     st.markdown("**4. Narrative for the monthly programme submission**")
     wp = sub["work_package"].iloc[0]
-    narr = build_narrative(str(sub["topic_title"].iloc[0]), PKG.get(pkg_id, ""), pkg_id,
-                           topics.set_index("topic_id").loc[tid, "location"], wp,
-                           chosen.assign(date=pd.to_datetime(chosen["date"])), fn,
-                           imp if len(imp) else pd.DataFrame(columns=["task_code", "task_name", "finish", "new_finish",
-                                                                       "delay_days", "is_milestone"]),
-                           impacted, ACTS, data_date, "P6 programme rev 017 (data date 22 May 2026)", contract)
+    narr = build_narrative(str(sub["topic_title"].iloc[0]), PKG.get(pkg_id, ""), pkg_id, loc, wp,
+                           chosen.assign(date=pd.to_datetime(chosen["date"])), fn, imp,
+                           impacted, ACTS, data_date, "P6 programme rev 017 (data date 22 May 2026)", contract,
+                           verdict=verdict)
     key = f"narr_{tid}"
     if ai_on and st.button("✨ Refine narrative with AI"):
         with st.spinner("Refining..."):
@@ -328,6 +504,99 @@ elif page == "Fragnet & narrative":
     d1.download_button("Fragnet for P6 (.xlsx)", to_p6_xlsx(fn), f"{tid}_fragnet.xlsx")
     d2.download_button("Narrative (.docx)", to_docx(text), f"{tid}_narrative.docx")
     d3.download_button("Narrative (.txt)", text, f"{tid}_narrative.txt")
+
+elif page == "EW → PMI → CE chain":
+    st.title("EW → PMI → CE chain")
+    st.caption("For every early warning: was a PM instruction issued, and is there a compensation event? A gap (EW with "
+               "no PMI and no CE) is a possible claim; an EW already covered by a CE or PMI is not suggested again.")
+    if CHAIN.empty:
+        st.warning("chain.csv not found - run scripts/build_data.py with --ewr and --pmis.")
+        st.stop()
+    ch = CHAIN.copy()
+    ch["group"] = ch["coverage"].str.split(" \\(").str[0]
+    if F_PKG:
+        ch = ch[ch["package_id"].isin(F_PKG)]
+    if F_TXT:
+        ch = ch[ch["title"].str.contains(F_TXT, case=False) | ch["ew_id"].str.contains(F_TXT, case=False)]
+    k = ch["group"].value_counts()
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Gap - no PMI/CE (open)", int(k.get("Gap - no PMI/CE", 0)))
+    c2.metric("Covered by a CE", int(k.get("Covered by CE", 0)))
+    c3.metric("PMI issued - check CE", int(k.get("PMI issued - check CE", 0)))
+    c4.metric("Closed / absorbed", int(k.get("Closed - no CE", 0) + k.get("Absorbed", 0)))
+    groups = ["Gap - no PMI/CE", "PMI issued - check CE", "Covered by CE", "Absorbed", "Closed - no CE"]
+    pick = st.multiselect("Show", groups, default=["Gap - no PMI/CE", "PMI issued - check CE"])
+    v = ch[ch["group"].isin(pick)].copy()
+    v["package"] = v["package_id"].map(PKG)
+    v = v.merge(EWR[["ew_id", "close_reason", "last_note"]], on="ew_id", how="left") if len(EWR) else v
+    ev = st.dataframe(v[["ew_id", "title", "package", "status", "notified", "pmis", "ces", "absorbed_by", "coverage"]],
+                      hide_index=True, width="stretch", height=380, on_select="rerun", selection_mode="single-row",
+                      key="chain_pick")
+    st.caption("Links: 'explicit' = the PMI or notes quote the EW; 'title match' = similar titles (check it). CE numbers "
+               "come from the PMIs (CEMAR numbering) and the P6 CE record (shown as 'P6 CE-0xx').")
+    if ev.selection.rows:
+        r = v.iloc[ev.selection.rows[0]]
+        st.subheader(f"{r.ew_id} · {r.title}")
+        tl = [{"date": r.notified, "step": "Early warning", "ref": r.ew_id, "detail": r.title}]
+        for p in filter(None, str(r.pmis).split(";")):
+            x = PMI[PMI["pmi"] == p]
+            if len(x):
+                x = x.iloc[0]
+                tl.append({"date": x.date.date() if pd.notna(x.date) else "", "step": "PM instruction", "ref": p,
+                           "detail": f"{x.title} ({x.kind})"})
+        for c in filter(None, str(r.ces).split(";")):
+            x = CEMAR_CE[CEMAR_CE["ce"] == c] if len(CEMAR_CE) else pd.DataFrame()
+            tl.append({"date": x.iloc[0]["first_seen"] if len(x) else "", "step": "Compensation event", "ref": c,
+                       "detail": x.iloc[0]["title"] if len(x) else ""})
+        if str(r.absorbed_by):
+            tl.append({"date": "", "step": "Closed - absorbed by", "ref": r.absorbed_by, "detail": r.get("close_reason", "")})
+        elif str(r.get("close_reason", "")):
+            tl.append({"date": "", "step": "Closed", "ref": "", "detail": r.close_reason})
+        st.dataframe(pd.DataFrame(tl), hide_index=True, width="stretch")
+        st.caption("Last EW meeting note: " + str(r.get("last_note", "")))
+        if r.group == "Gap - no PMI/CE":
+            st.warning("No PMI and no CE found for this EW. If the event is a CE under cl. 60.1, check the 8-week "
+                       "time bar (cl. 61.3) and consider notifying. Use Theme search to gather the facts.")
+    st.download_button("Download chain (CSV)", v.to_csv(index=False).encode(), "ew_pmi_ce_chain.csv")
+
+elif page == "PMI register":
+    st.title("PMI register")
+    st.caption("All Project Manager's Instructions read from the CEMAR PDFs: type, theme, references to EWs, CEs and "
+               "GC letters, and PMIs that change a date (e.g. access or works by Others moved).")
+    if PMI.empty:
+        st.warning("pmi_register.csv not found - run scripts/build_data.py --pmis <folder>.")
+        st.stop()
+    p = PMI.copy()
+    if F_PKG:
+        p = p[p["package_id"].isin(F_PKG)]
+    if F_TXT:
+        p = p[p["title"].str.contains(F_TXT, case=False) | p["summary"].str.contains(F_TXT, case=False)
+              | p["pmi"].str.contains(F_TXT, case=False)]
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("PMIs", len(p))
+    c2.metric("Changes to Scope", int(p["kind"].str.startswith("Change").sum()))
+    c3.metric("With a date change", int(p["date_change"].sum()))
+    c4.metric("Quotation requests", int(p["kind"].str.contains("uotation").sum()))
+    kinds = st.multiselect("Type", sorted(p["kind"].unique()))
+    only_dates = st.toggle("Only PMIs that change a date", value=False)
+    if kinds:
+        p = p[p["kind"].isin(kinds)]
+    if only_dates:
+        p = p[p["date_change"]]
+    p["package"] = p["package_id"].map(PKG)
+    p["date"] = p["date"].dt.date
+    ev = st.dataframe(p[["pmi", "date", "title", "kind", "package", "ce_refs", "ew_refs", "gc_refs", "date_change",
+                         "dates_mentioned"]], hide_index=True, width="stretch", height=420, on_select="rerun",
+                      selection_mode="single-row", key="pmi_pick")
+    if ev.selection.rows:
+        r = p.iloc[ev.selection.rows[0]]
+        st.subheader(f"{r.pmi} · {r.title}")
+        st.caption(f"{r.date} · {r.kind} · clause {r.clause or '-'} · {r.package} · "
+                   f"{fmt_micro(r.phase, r.zone, r.direction, r.location) or 'no location found'}")
+        if r.no_effect_on_cost_or_completion in (True, "True"):
+            st.info("The PM states this instruction has no effect on Defined Cost or Completion.")
+        st.write(r.summary)
+    st.download_button("Download PMI register (CSV)", p.to_csv(index=False).encode(), "pmi_register.csv")
 
 elif page == "CE dashboard":
     st.title("Delay & compensation event dashboard")
@@ -343,6 +612,17 @@ elif page == "CE dashboard":
     if not ev.empty:
         nearest = min((d - today).days for d in ev["deadline_latest"])
         c4.metric("Days to nearest 61.3 deadline", nearest)
+
+    if len(CHAIN):
+        cg = CHAIN["coverage"].str.split(" \\(").str[0].value_counts()
+        st.subheader("Early warnings: coverage by PMI / CE")
+        d1, d2, d3 = st.columns(3)
+        d1.metric("EWs with no PMI and no CE (open)", int(cg.get("Gap - no PMI/CE", 0)))
+        d2.metric("EWs covered by a CE", int(cg.get("Covered by CE", 0)))
+        d3.metric("PMIs on record", len(PMI))
+        if st.button("Open the EW → PMI → CE chain ➜"):
+            st.session_state["goto"] = "EW → PMI → CE chain"
+            st.rerun()
 
     st.subheader("Alerts")
     for r in ev.itertuples():
@@ -409,9 +689,17 @@ elif page == "EW scan":
     scan["days since EW"] = scan["notified"].dt.date.apply(lambda d: (today - d).days if pd.notna(d) else None)
     scan["priority"] = scan["topic"].eq("Utilities").map({True: "1 - Utilities (Others)", False: "2 - Other"})
     scan["matched_ce"] = scan.get("matched_ce", pd.Series(dtype=str)).fillna("")
-    hide_matched = st.toggle("Hide EWs already matched to a notified CE (P6 CE record)", value=True)
+    if len(CHAIN):
+        scan = scan.merge(CHAIN[["ew_id", "pmis", "ces", "coverage"]], on="ew_id", how="left").fillna(
+            {"pmis": "", "ces": "", "coverage": ""})
+    else:
+        scan["pmis"], scan["ces"], scan["coverage"] = "", "", ""
+    if len(EWR):
+        scan = scan.merge(EWR[["ew_id", "absorbed_by", "close_reason"]], on="ew_id", how="left").fillna(
+            {"absorbed_by": "", "close_reason": ""})
+    hide_matched = st.toggle("Hide EWs already covered by a CE or a PMI (CEMAR PMIs + P6 CE record)", value=True)
     if hide_matched:
-        scan = scan[scan["matched_ce"] == ""]
+        scan = scan[(scan["matched_ce"] == "") & (scan["ces"] == "") & (scan["pmis"] == "")]
     c1, c2, c3 = st.columns(3)
     c1.metric("EWs on Client / Others with no CE found", len(scan))
     c2.metric("Still open", int((scan["status"] == "Open").sum()))
@@ -419,15 +707,17 @@ elif page == "EW scan":
     st.info("These early warnings involve the Client, the PM or Others (utilities, authorities) and the EW register "
             "shows no compensation event reference. Each is a candidate to check against the CE register: if no CE was "
             "notified and the event is a CE, the 8-week time bar (cl. 61.3) may already have passed - the value at risk.")
-    only_open = st.toggle("Only open EWs", value=True)
+    only_open = st.toggle("Only open EWs", value=False,
+                          help="Off = closed EWs are shown too, with what absorbed them, so the history is complete.")
     topic = st.multiselect("Topic", sorted(scan["topic"].dropna().unique()))
     v = scan[(scan["status"] == "Open") if only_open else slice(None)]
     if topic:
         v = v[v["topic"].isin(topic)]
     v = v.sort_values(["priority", "notified"], ascending=[True, False])
     v["notified"] = v["notified"].dt.date
-    st.dataframe(v[["priority", "ew_id", "topic", "title", "notified", "status", "matched_ce", "8 weeks from EW", "days since EW"]],
-                 hide_index=True, width="stretch")
+    cols = ["priority", "ew_id", "topic", "title", "notified", "status", "absorbed_by", "close_reason", "matched_ce",
+            "8 weeks from EW", "days since EW"]
+    st.dataframe(v[[c for c in cols if c in v.columns]], hide_index=True, width="stretch")
     st.caption("Keyword screen of the EW register of 01 Oct 2026, matched by title against the CE record in P6 rev 017 "
                "(CE-001 to CE-037). CEs notified after May 2026 are not in that record - confirm against CEMAR.")
 

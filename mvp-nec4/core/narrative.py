@@ -4,21 +4,23 @@ from datetime import date
 
 import pandas as pd
 
+_OTHERS = "Clause 60.1(5) (Others not working within the times shown on the Accepted Programme)"
 CLAUSE_HINTS = {
-    "UTIL": "Clause 60.1(5) (Others not working within the times shown on the Accepted Programme)",
-    "STRUCT": "Clauses 60.1(1) (change to the Scope), 60.1(12) (physical conditions) and 14.3",
-    "EARTH": "Clause 60.1(12) (physical conditions)",
-    "ENV": "Clauses 60.1(3) / 60.1(5) (Client or Others not providing or not working to the Accepted Programme)",
-    "LAND": "Clause 60.1(2) (access to the Site not given by the access date)",
-    "SCOPE": "Clauses 60.1(1) (change to the Scope) and 60.1(6) (PM reply not within the period for reply)",
-    "TM": "Clauses 60.1(1) / 60.1(5)",
+    "BT": _OTHERS, "SW": _OTHERS, "SSEN": _OTHERS,
+    "LEDP": "Clauses 60.1(1) (change to the Scope), 60.1(12) (physical conditions) and 14.3",
+    "GUAY": "Clauses 60.1(2) / 60.1(3) (access or things the Client is to provide not given by the dates shown)",
+    "TOPO": "Clauses 60.1(12) (physical conditions) and 60.1(1) where the Scope must change",
+    "BEAVER": "Clauses 60.1(5) / 60.1(12), subject to the licensing position",
+    "ITS": "Clauses 60.1(1) (change to the Scope) and 60.1(6) (PM reply not within the period for reply)",
+    "SURVEY": "Clause 60.1(3) (Client does not provide something by the date shown on the Accepted Programme)",
     "OTHER": "the relevant Clause 60.1 event (to be confirmed)",
 }
 
 
 def build_narrative(topic: str, package: str, package_id: str, location: str, work_package: str,
                     facts: pd.DataFrame, fragnet: pd.DataFrame, imp: pd.DataFrame, impacted: list[str],
-                    acts: pd.DataFrame, data_date: date, programme_ref: str, contract: str) -> str:
+                    acts: pd.DataFrame, data_date: date, programme_ref: str, contract: str,
+                    verdict: str = "") -> str:
     facts = facts.sort_values("date")
     first, last = facts.iloc[0], facts.iloc[-1]
     chron = "\n".join(f"- {pd.to_datetime(r.date):%d %b %Y} - {r.ref}: {' '.join(str(r.summary).split())[:300]}"
@@ -74,6 +76,7 @@ Key dates and milestones affected:
 {ms_txt}
 
 {completion}
+{('Assessment: ' + verdict) if verdict else ''}
 
 5. Contractual position
 The event is considered to fall under {CLAUSE_HINTS.get(package_id, CLAUSE_HINTS['OTHER'])}. Early warnings

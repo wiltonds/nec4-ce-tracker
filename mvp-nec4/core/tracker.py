@@ -6,32 +6,27 @@ from collections import Counter
 
 import pandas as pd
 
-# Default "big packages". Editable in data/packages.csv (the Project Manager's own list).
+# Main topics ("pacotes de assunto") defined by the project team. Editable in data/packages.csv.
+# Keywords are case-insensitive substrings; a keyword starting with "re:" is a case-sensitive regex.
 DEFAULT_PACKAGES = [
-    {"package_id": "UTIL", "package": "Utilities & works by Others",
-     "keywords": "openreach;bt ;btor;fibre;ssen;scottish water;sw main;utilit;qts;network rail;power supply;"
-                 "uncharted services;statutory undertaker;cable;apparatus;diversion;undertrack"},
-    {"package_id": "STRUCT", "package": "Structures & heritage",
-     "keywords": "bridge;culvert;retaining wall; rw ;listed;lb5574;lb 5574;heritage;parapet;sheet pil;piling;"
-                 "structural;abutment;soil nail;headwall"},
-    {"package_id": "EARTH", "package": "Earthworks, drainage & ground",
-     "keywords": "earthwork;drainage;ground condition;topsoil;excavat;geotech;rock;dewater;run-off;run off;"
-                 "ditch;physical condition;topograph;filter drain;soil"},
-    {"package_id": "ENV", "package": "Environment & ecology",
-     "keywords": "ecolog;inns;balsam;bat ;bats;fish;otter;badger;water quality;wqm;tree fell;felling;nesting;"
-                 "sepa;pws;private water;invasive;species;naturescot;noise;vibration;windthrow;car licen"},
-    {"package_id": "LAND", "package": "Land, access & consents",
-     "keywords": "landowner;access;cpo;land ;farm;consent;licen;pkc;council;permit;section 61;wayleave;"
-                 "community;boundar;occupier"},
-    {"package_id": "SCOPE", "package": "Scope, design & Client decisions",
-     "keywords": "scope;design;tq;client's team;client team;vehicles;contact information;specification;"
-                 "instruction;change to scope;departure;sds;check certificate;assumption;weather"},
-    {"package_id": "TM", "package": "Traffic management, ITS & roads",
-     "keywords": "traffic;ttm; tm ;switch; its ;camera;cctv;vms;streetlight;street light;signage;road closure;"
-                 "lane;pavement;surfacing;rsa;radar;kerb"},
+    {"package_id": "BT", "package": "BT / Openreach",
+     "keywords": r"openreach;btor;bt openreach;fibre;copper cable;circet;joint box;re:\bBT\b"},
+    {"package_id": "GUAY", "package": "Guay Farmhouse", "keywords": "guay farmhouse;guay cattle;guay"},
+    {"package_id": "LEDP", "package": "Ledpettie Bridge", "keywords": "ledpettie;ledpetty;lb5574;lb 5574"},
+    {"package_id": "TOPO", "package": "Topography",
+     "keywords": "topograph;topo survey;topo data;existing levels;ground model;level discrepanc"},
+    {"package_id": "BEAVER", "package": "Beaver", "keywords": "beaver"},
+    {"package_id": "SW", "package": "Scottish Water",
+     "keywords": r"scottish water;sw main;water main;re:\bSW\b"},
+    {"package_id": "ITS", "package": "ITS",
+     "keywords": r"cctv;camera;vms;radar;tse equip;weather station;loops;re:\bITS\b"},
+    {"package_id": "SURVEY", "package": "Survey Control",
+     "keywords": "survey control;control station;control point;setting out;setting-out;benchmark;gnss"},
+    {"package_id": "SSEN", "package": "SSEN",
+     "keywords": "ssen;overhead line;oh cable;ug cable;transformer;power supply;mains power;electricity"},
 ]
 
-NAME_RE = re.compile(r"\b(Mr|Mrs|Ms|Miss|Dr)\.?\s+[A-Z][a-zA-Z\-']+(?:\s+[A-Z][a-zA-Z\-']+)?")
+NAME_RE = re.compile(r"\b(Mr|Mrs|Ms|Miss|Dr)\.?\s+[A-Z][a-zA-Z\-]+(?:'s\b|(?:\s+[A-Z][a-zA-Z\-]+(?:'s\b)?)?)")
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 PHONE_RE = re.compile(r"(\+?\d[\d\s()-]{8,}\d)")
 CH_KM_RE = re.compile(r"\bch\.?\s*:?\s*(\d{1,2})\s*\+\s*(\d{3})", re.I)
@@ -81,11 +76,55 @@ def fmt_location(a, b) -> str:
     return f"CH {a}" if a == b else f"CH {a}-{b}"
 
 
+PHASE_RE = re.compile(r"\b(?:phase|ph)\.?\s*(\d)\b", re.I)
+ZONE_RE = re.compile(r"\bzones?\s*(\d{1,2}(?:\s*(?:,|and|&|-)\s*\d{1,2})*)", re.I)
+DIR_RE = re.compile(r"\b(NB|SB|northbound|southbound|north\s*bound|south\s*bound)\b", re.I)
+
+
+def parse_micro(text: str) -> dict:
+    """Micro location (level 1 of the classification): phase, zone and direction, e.g. 'Ph2 Zone 8 SB'."""
+    t = str(text)
+    ph = PHASE_RE.search(t)
+    zn = ZONE_RE.search(t)
+    dr = DIR_RE.search(t)
+    d = ""
+    if dr:
+        d = "NB" if dr.group(1).lower().startswith(("nb", "north")) else "SB"
+    zone = re.sub(r"\s*(,|and|&)\s*", ",", zn.group(1)).replace(" ", "") if zn else ""
+    return {"phase": ph.group(1) if ph else "", "zone": zone, "direction": d}
+
+
+def fmt_micro(phase, zone, direction, location="") -> str:
+    parts = []
+    if str(phase) not in ("", "nan"):
+        parts.append(f"Ph{str(phase).split('.')[0]}")
+    if str(zone) not in ("", "nan"):
+        parts.append(f"Zone {zone}")
+    if str(direction) not in ("", "nan"):
+        parts.append(str(direction))
+    if str(location) not in ("", "nan"):
+        parts.append(str(location))
+    return " ".join(parts)
+
+
+def _kw_score(raw: str, low: str, keywords: str) -> int:
+    s = 0
+    for k in str(keywords).split(";"):
+        if not k:
+            continue
+        if k.startswith("re:"):
+            s += len(re.findall(k[3:], raw))
+        else:
+            s += low.count(k.lower())
+    return s
+
+
 def classify_package(text: str, packages: pd.DataFrame) -> str:
-    low = f" {str(text).lower()} "
+    raw = f" {str(text)} "
+    low = raw.lower()
     best, score = "OTHER", 0
     for p in packages.itertuples():
-        s = sum(low.count(k) for k in str(p.keywords).split(";") if k)
+        s = _kw_score(raw, low, p.keywords)
         if s > score:
             best, score = p.package_id, s
     return best

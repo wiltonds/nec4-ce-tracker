@@ -3,14 +3,16 @@
 Protótipo em Streamlit para o planejamento de atrasos em contratos **NEC4 ECC**. Ele segue o fluxo do planejador:
 **fato → tracker classificado → assunto que vira atraso → fragnet → impacto no cronograma → narrativa do fechamento mensal**.
 
-1. **Tracker**: registro de cada fato (e-mail, CEMAR, relatório, ata), classificado por **pacote** (5-8 grandes pacotes do gerente), **pacote de trabalho**, **local (CH)** e **assunto**. É possível filtrar, editar a classificação e ligar o assunto às atividades do P6, com sugestões automáticas por palavra-chave e estaca.
-2. **Fragnet & narrative**: para o assunto escolhido, gera o fragnet (atividades com início, fim e lógica FS), liga às atividades do P6, calcula quais atividades e marcos o atraso empurra e redige a narrativa do programa mensal (cl. 32). Exporta Excel no layout de importação do P6 e Word.
-3. **Ingest documents**: lê PDF, Word ou e-mail e propõe pacote, assunto, local e atividades impactadas, depois inclui no tracker.
-4. **CE dashboard**, **Timeline** e **Draft notification**: controle dos prazos de 8 semanas (cl. 61.3) e minuta de notificação de evento compensatório.
-5. **EW scan**: early warnings sobre cliente ou terceiros sem CE correspondente (cruzado com o registro de CEs do P6).
-6. **NEC4 rules**: prazos e gatilhos do ECC4.
+1. **Tracker**: registro de cada fato (e-mail, CEMAR, relatório, ata), classificado por **assunto principal** (BT/Openreach, Guay Farmhouse, Ledpettie Bridge, Topography, Beaver, Scottish Water, ITS, Survey Control, SSEN), **pacote de trabalho**, **local (CH)** e **assunto**. É possível filtrar, editar a classificação e ligar o assunto às atividades do P6, com sugestões automáticas por palavra-chave e estaca.
+2. **Theme search**: busca uma palavra (ex.: "beaver", "Kindallachan") em todos os fatos, PMIs e EWs (inclusive fechados) e monta um fragnet com fatos de vários assuntos.
+3. **Fragnet & narrative**: para o assunto escolhido (ou a seleção misturada), gera o fragnet (atividades com início, fim e lógica FS), liga às atividades do P6, calcula quais atividades e marcos o atraso empurra e diz se o atraso é **prazo + custo** ou **só custo** (absorvido pela folga) e redige a narrativa do programa mensal (cl. 32). Exporta Excel no layout de importação do P6 e Word.
+4. **EW → PMI → CE chain** e **PMI register**: cadeia de cada EW até PMI e CE; os buracos são oportunidades, o que já tem CE ou PMI não é sugerido de novo.
+5. **Ingest documents**: lê PDF, Word ou e-mail e propõe pacote, assunto, local e atividades impactadas, depois inclui no tracker.
+6. **CE dashboard**, **Timeline** e **Draft notification**: controle dos prazos de 8 semanas (cl. 61.3) e minuta de notificação de evento compensatório.
+7. **EW scan**: early warnings sobre cliente ou terceiros sem CE nem PMI, inclusive os fechados com "absorvido por".
+8. **NEC4 rules**: prazos e gatilhos do ECC4.
 
-Os pacotes ficam em `data/packages.csv` (id, nome, palavras-chave) e podem ser trocados pela lista oficial do gerente.
+Classificação em 3 níveis: **micro** (fase, zona, sentido, estaca), **pacote de serviço do P6** (2 primeiros níveis da WBS) e **tema macro** (os 9 assuntos). Os assuntos principais ficam em `data/packages.csv` (id, nome, palavras-chave; `re:` = expressão regular). Os filtros da barra lateral (assunto, texto, estaca) valem para todas as abas.
 
 Os dados vêm do projeto A9 (caso **Ledpettie Bridge**) e estão **pseudonimizados**: só aparecem funções, sem nomes de pessoas, e-mails ou telefones.
 - `data/documents.csv`: linha do tempo montada a partir da correspondência do CEMAR (GC-347 a GC-1456) e do registro de EW.
@@ -19,16 +21,19 @@ Os dados vêm do projeto A9 (caso **Ledpettie Bridge**) e estão **pseudonimizad
 - `data/tracker.csv`: 849 fatos (EWs + notas datadas das reuniões de EW + correspondência do CEMAR) em 219 assuntos.
 - `data/activities.csv` e `data/relationships.csv`: as 3.385 atividades e 6.998 vínculos do P6 rev 017, usados para sugerir atividades e calcular o impacto.
 - `data/ce_record.csv`: CE-001 a CE-037, registrados no próprio P6.
+- `data/pmi_register.csv`: PMI-1 a PMI-111 lidos dos PDFs do CEMAR; `data/cemar_ce.csv`: 47 CEs citados nos PMIs.
+- `data/ew_register.csv`: os 222 EWs (abertos e fechados) com "absorvido por"; `data/chain.csv`: cadeia EW → PMI → CE.
 
 Mesmo sem nomes, esses dados continuam **confidenciais** (cl. 29 do contrato). Não publique o repositório.
 
 ## Atualizar os dados a partir dos arquivos brutos
 
 ```bash
-python scripts/build_data.py --xer caminho/programa.xer --ewr "caminho/Early Warning Register.xlsx" --names nomes_privados.txt
+python scripts/build_data.py --xer caminho/programa.xer --ewr "caminho/Early Warning Register.xlsx" \
+    --pmis pasta_com_os_PDFs_de_PMI --names nomes_privados.txt
 ```
 
-Os arquivos brutos (.xer, registros, PDFs) e a lista de nomes a apagar (`--names`, um por linha) ficam **fora** do repositório.
+A leitura dos PMIs usa o `pdftotext` (pacote poppler-utils). Os arquivos brutos (.xer, registros, PDFs) e a lista de nomes a apagar (`--names`, um por linha) ficam **fora** do repositório.
 
 ## Como rodar (Cursor ou terminal)
 
