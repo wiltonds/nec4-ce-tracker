@@ -14,7 +14,8 @@ import pandas as pd
 SYNONYMS = {
     "ponte": ["bridge", "ledpettie", "lb5574", "structure"], "bridge": ["ledpettie", "lb5574"],
     "ledpettie": ["lb5574", "bridge"], "castor": ["beaver"], "castores": ["beaver", "beavers"],
-    "beaver": ["beavers", "naturescot"], "fibra": ["fibre", "openreach", "bt"], "openreach": ["bt", "fibre", "btor"],
+    "beaver": ["beavers", "naturescot"], "beavers": ["beaver", "naturescot"], "delays": ["delay", "late"],
+    "replied": ["reply", "response"], "issues": ["problem", "condition"], "fibra": ["fibre", "openreach", "bt"], "openreach": ["bt", "fibre", "btor"],
     "agua": ["water", "scottish"], "água": ["water", "scottish"], "energia": ["ssen", "power", "electricity"],
     "fazenda": ["guay", "farmhouse"], "guay": ["farmhouse"], "atraso": ["delay", "delays", "late"],
     "atrasos": ["delay", "delays"], "resposta": ["reply", "response"], "respondeu": ["reply", "response"],

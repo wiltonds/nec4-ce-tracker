@@ -363,8 +363,8 @@ elif page == "Ask the project":
     corpus, idx = search_index()
     mode = st.radio("Search by", ["Question", "Document (before and after)"], horizontal=True, key="ask_mode")
     if mode == "Question":
-        examples = ["problemas na ponte perto da estaca 1600 desde março e o que o PM respondeu",
-                    "castores na estaca 6500", "atrasos da Openreach", "Guay Farmhouse acesso demolição"]
+        examples = ["issues at the bridge near CH 1600 since March and what the PM replied",
+                    "beavers at CH 6500", "Openreach delays", "Guay Farmhouse access and demolition"]
         ex = st.selectbox("Examples", [""] + examples, key="ask_ex")
         q = st.text_input("Your question", ex, key=f"ask_q_{ex}",
                           placeholder="e.g. what happened with the bridge at CH 1600 since March?")
