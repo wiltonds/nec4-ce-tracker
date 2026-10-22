@@ -14,6 +14,7 @@ from core.fragnet import DEFAULT_STEPS, KEY_TYPES, build_fragnet, impact, time_o
 from core.narrative import build_narrative
 from core.nec4_rules import RULES, ce_deadline, status_for
 from core.notice import build_notice, to_docx
+from core.search import Index, around_document, build_corpus, parse_query, summary_ai, summary_offline
 from core.tracker import (ActivityIndex, classify_package, fmt_location, fmt_micro, parse_chainage, parse_micro,
                           scrub)
 
@@ -94,6 +95,13 @@ def registers():
     return pmi, ew, _r("chain.csv", []), _r("cemar_ce.csv", [])
 
 
+@st.cache_resource
+def search_index():
+    pmi, ew, _, cc = registers()
+    corpus = build_corpus(load_csv("tracker.csv", ["date"]).fillna(""), pmi, ew, cc)
+    return corpus, Index(corpus)
+
+
 @st.cache_data(max_entries=200)
 def suggest_cached(text: str, ch):
     return AIDX.suggest(text, None if ch is None or pd.isna(ch) else float(ch))
@@ -112,7 +120,7 @@ ACT_LABEL = {r.task_code: f"{r.task_code} · {r.task_name[:80]}" for r in ACTS.i
 # ---------- sidebar ----------
 st.sidebar.title("🚧 NEC4 CE Tracker")
 st.sidebar.caption("MVP - delay & compensation event control")
-PAGES = ["Tracker", "Theme search", "Fragnet & narrative", "EW → PMI → CE chain", "PMI register",
+PAGES = ["Tracker", "Ask the project", "Theme search", "Fragnet & narrative", "EW → PMI → CE chain", "PMI register",
          "Ingest documents", "CE dashboard", "Timeline", "EW scan", "Draft notification", "NEC4 rules"]
 if st.session_state.get("goto") in PAGES:
     st.session_state["nav"] = st.session_state.pop("goto")
@@ -309,6 +317,82 @@ if page == "Tracker":
     st.download_button("Download tracker (CSV)", st.session_state.tracker.to_csv(index=False).encode(),
                        "tracker.csv")
     st.caption("Changes live in this session. Download the CSV to keep them (database persistence is a next step).")
+
+elif page == "Ask the project":
+    st.title("Ask the project")
+    st.caption("Ask in plain language (Portuguese or English) or pick one document. The search runs over every "
+               "tracker fact, PMI, early warning and CE and is free; the AI is used only if you click "
+               "'Summarise with AI', and it must cite the references.")
+    corpus, idx = search_index()
+    mode = st.radio("Search by", ["Question", "Document (before and after)"], horizontal=True, key="ask_mode")
+    if mode == "Question":
+        examples = ["problemas na ponte perto da estaca 1600 desde março e o que o PM respondeu",
+                    "castores na estaca 6500", "atrasos da Openreach", "Guay Farmhouse acesso demolição"]
+        ex = st.selectbox("Examples", [""] + examples, key="ask_ex")
+        q = st.text_input("Your question", ex, key=f"ask_q_{ex}",
+                          placeholder="e.g. what happened with the bridge at CH 1600 since March?")
+        if not q:
+            st.stop()
+        since, ch = parse_query(q)
+        hits = idx.search(q, k=int(st.slider("Max results", 10, 60, 30, key="ask_k")), since=since, ch=ch)
+        notes = [f"since {since:%b %Y}" if since is not None else "", f"near CH {ch}" if ch else ""]
+        st.caption("Understood filters: " + (", ".join(n for n in notes if n) or "none") +
+                   " · synonyms added: " + ", ".join(sorted(set(idx.expand(q)) - set(q.lower().split())))[:200])
+        if hits.empty:
+            st.warning("Nothing found. Try other words or a reference (EW-95, PMI-30, GC-1385).")
+            st.stop()
+        sel = hits.sort_values("date")
+        key = "ask_" + q
+    else:
+        refs = sorted(corpus["ref"].unique(), key=lambda r: (r.split("-")[0], int(r.split("-")[1]) if r.split("-")[-1].isdigit() else 0))
+        ref = st.selectbox("Document", refs, index=refs.index("GC-1385") if "GC-1385" in refs else 0, key="ask_ref")
+        win = st.slider("Window (days before and after)", 30, 720, 365, step=30, key="ask_win")
+        anchor, sel = around_document(corpus, ref, win)
+        if anchor is None:
+            st.warning("Document not found.")
+            st.stop()
+        st.info(f"**{anchor.label}** · {anchor.date:%d %b %Y} · {anchor.kind}\n\n{' '.join(str(anchor.text).split())[:500]}")
+        b, a = (sel["when"] == "before").sum(), (sel["when"] == "after").sum()
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Before", int(b))
+        c2.metric("After", int(a))
+        c3.metric("References linked", len(set().union(*sel["refs"])) if len(sel) else 0)
+        q = f"What happened before and after {anchor.label}?"
+        key = "ask_doc_" + ref
+    k1, k2, k3 = st.columns(3)
+    k1.metric("Records found", len(sel))
+    k2.metric("PMIs", int((sel["source"] == "PMI").sum()))
+    k3.metric("CEs", int((sel["source"] == "CE (from PMIs)").sum()))
+    tl = sel.copy()
+    tl["y"] = tl["source"]
+    fig = px.scatter(tl, x="date", y="y", color="source", hover_data={"label": True, "kind": True, "y": False},
+                     height=230)
+    fig.update_traces(marker=dict(size=11))
+    fig.update_layout(margin=dict(l=0, r=0, t=10, b=0), yaxis_title=None, xaxis_title=None, showlegend=False)
+    st.plotly_chart(fig, width="stretch")
+    st.markdown("**Answer**")
+    if ai_on and st.button("✨ Summarise with AI (uses credits)", key="ask_ai_btn"):
+        with st.spinner("Writing the answer from the records found..."):
+            st.session_state[key] = summary_ai(q, sel, extractor.MODEL)
+    if st.session_state.get(key):
+        st.success(st.session_state[key])
+    else:
+        st.caption("Chronology of the records found (no AI):")
+        st.markdown(summary_offline(sel))
+    show = sel.assign(include=True, date=sel["date"].dt.date)
+    cols = ["include", "date", "label", "kind", "source", "topic", "text"] + (["when"] if "when" in show else [])
+    ed = st.data_editor(show[cols], hide_index=True, width="stretch", height=360, key="ask_tbl_" + key,
+                        disabled=[c for c in cols if c != "include"],
+                        column_config={"text": st.column_config.TextColumn("content", width="large")})
+    if st.button("Build fragnet from the ticked records ➜", type="primary"):
+        pick = sel.loc[ed[ed["include"]].index]
+        st.session_state["mixed"] = {
+            "facts": pd.DataFrame({"date": pick["date"], "ref": pick["label"], "entry_type": pick["kind"],
+                                   "summary": pick["text"].str.slice(0, 400)}),
+            "title": q[:60], "package_id": pick["package_id"].mode().iat[0] if len(pick) else "OTHER"}
+        st.session_state["topic_sel"] = "MIXED"
+        st.session_state["goto"] = "Fragnet & narrative"
+        st.rerun()
 
 elif page == "Theme search":
     st.title("Theme search - build one fragnet from several topics")
