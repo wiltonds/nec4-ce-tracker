@@ -396,12 +396,179 @@ def build_ew_register(ewr_path: str):
           f"absorbed {int(out.absorbed_by.ne('').sum())}")
 
 
+# ---------------------------------------------------------------- official CEMAR register exports (CSV)
+def _read_reg(path):
+    df = pd.read_csv(path, encoding="cp1252", dtype=str).fillna("")
+    df.columns = [c.strip() for c in df.columns]
+    return df
+
+
+def _d(s):
+    return pd.to_datetime(s, format="%d/%m/%Y", errors="coerce")
+
+
+def _clean(t):
+    t = str(t).replace("\xa0", " ").strip()
+    return "" if t == "Content unavailable" else scrub(re.sub(r"\s+", " ", t))
+
+
+ORGS = ("Progress|Meeting|Openreach|BT|SSEN|SSE|Network Rail|Transport Scotland|Scottish Water|Perth|Kinross|Atholl|Openreach|Jacobs|NatureScot|Historic|"
+        "Environment|Project Manager|Contractor|Supervisor|Wills Bros|Bros|Think Project|Track Record|Information Portal|"
+        "Early Warning|Compensation Event|Contract Period|General Wade|Guay|Dowally|Ledpettie|Kindallachan|Haugh|Rotmell|"
+        "Tulliemet|Dalmarnock|Ballinluig|Dunkeld|Tay|Programme|Design|Scope|Quality|Traffic|Road|Bridge|Monday|Tuesday|"
+        "Wednesday|Thursday|Friday|January|February|March|April|May|June|July|August|September|October|November|December")
+CTX_NAME_RE = re.compile(r"\b(Hi|Hello|Dear|Morning|Afternoon|Regards,?|Thanks,?|Kind regards,?|granted to|for|to|from|by|cc|with)"
+                         r"\s+(?!(?:" + ORGS + r")\b)([A-Z][a-z]+ (?!(?:" + ORGS + r")\b)[A-Z][a-zA-Z'\-]+)\b")
+EMAIL_NAME_RE = re.compile(r"\b[A-Z][a-z]+ [A-Z][a-zA-Z'\-]+\s*[-(]*\s*\[email\]")
+
+
+def _clean_letter(t):
+    """GC descriptions are free text (greetings, access requests): extra redaction of names in context."""
+    t = _clean(t)
+    t = EMAIL_NAME_RE.sub("[person] [email]", t)
+    t = re.sub(r"\b(Hi|Hello|Dear|Morning|Afternoon|Evening)\s+(?!All\b|Team\b|These\b|Both\b)[A-Z][a-z]+", r"\1 [person]", t)
+    return CTX_NAME_RE.sub(lambda m: f"{m.group(1)} [person]", t)
+
+
+def register_names(reg_dir: str) -> list[str]:
+    """Author names in the exports, added to the redaction list (they never reach data/)."""
+    names = set()
+    for f in Path(reg_dir).glob("*.csv"):
+        df = _read_reg(f)
+        if "Author" in df:
+            names |= {n.strip() for n in df["Author"] if n.strip()}
+    return sorted(names)
+
+
+def build_registers(reg_dir: str):
+    """CE / TQ / GC / PMI registers exported from CEMAR -> data/*.csv (no author names)."""
+    pk = _packages()
+    reg = Path(reg_dir)
+    f = next(reg.glob("*CE Register*.csv"), None) or next(reg.glob("ce_register*.csv"), None)
+    if f:
+        c = _read_reg(f)
+        out = pd.DataFrame({
+            "ce": c["Ref"], "notified": _d(c["Notification Date"]).dt.date, "from": c["From"],
+            "title": c["Title"].map(_clean), "price": c["Price"].str.replace(r"[^\d.\-]", "", regex=True),
+            "days": c["Days"], "implemented": _d(c["Implemented"]).dt.date, "decision": c["Decision Description"].map(_clean),
+            "quotation_due": _d(c["Quotation Due Date"]).dt.date, "assessment_due": _d(c["Assessment Due Date"]).dt.date,
+            "clause": c["Type"].str.strip(), "status": c["Status"].str.strip()})
+        out["package_id"] = out["title"].map(lambda t: classify_package(t, pk))
+        out["n"] = out["ce"].str.extract(r"(\d+)$")[0].astype(int)
+        out.sort_values("n").drop(columns="n").to_csv(DATA / "ce_register.csv", index=False)
+        print(f"ce_register.csv: {len(out)} CEs; {out.status.value_counts().to_dict()}")
+    f = next(reg.glob("*TQ Register*.csv"), None) or next(reg.glob("tq_register*.csv"), None)
+    if f:
+        t = _read_reg(f)
+        t = t[t["Ref"].str.startswith("TQ-")]
+        due, rep = _d(t["Reply Due"]), _d(t["Reply Date"])
+        out = pd.DataFrame({
+            "tq": t["Ref"], "cross_ref": t["Cross Ref"], "notified": _d(t["Notified"]).dt.date, "from": t["From"],
+            "title": t["Title"].map(_clean), "reply_due": due.dt.date, "reply_date": rep.dt.date,
+            "days_late": (rep - due).dt.days.where(lambda x: x > 0), "question": t["Description"].map(_clean_letter),
+            "reply": t["Reply Description"].map(_clean_letter), "status": t["Status"].str.strip()})
+        out["package_id"] = (out["title"] + " " + out["question"]).map(lambda x: classify_package(x, pk))
+        out.to_csv(DATA / "tq_register.csv", index=False)
+        print(f"tq_register.csv: {len(out)} TQs; replied late: {int(out.days_late.notna().sum())}; "
+              f"overdue: {int((out.status == 'OVERDUE').sum())}")
+    f = next(reg.glob("*GC Register*.csv"), None) or next(reg.glob("gc_register*.csv"), None)
+    if f:
+        g = _read_reg(f)
+        g = g[g["Ref"].str.startswith("GC-")]
+        out = pd.DataFrame({
+            "gc": g["Ref"], "date": _d(g["Notification Date"]).dt.date, "from": g["From"],
+            "title": g["Title"].map(_clean_letter), "kind": g["Reference"], "reply_due": _d(g["Reply Due"]).dt.date,
+            "description": g["Description"].map(_clean_letter).str.slice(0, 600), "status": g["Status"].str.strip()})
+        out["further_to"] = out["title"].str.extract(r"[Ff]urther to (GC-\d+)")[0].fillna("")
+        out["package_id"] = (out["title"] + " " + out["description"]).map(lambda x: classify_package(x, pk))
+        a, b = zip(*(parse_chainage(f"{x} {y}") for x, y in zip(out["title"], out["description"])))
+        out["location"] = [fmt_location(i, j) for i, j in zip(a, b)]
+        out.to_csv(DATA / "gc_register.csv", index=False)
+        print(f"gc_register.csv: {len(out)} letters; overdue: {int((out.status == 'OVERDUE').sum())}")
+    f = next(reg.glob("*PMI Register*.csv"), None) or next(reg.glob("pmi_register_official*.csv"), None)
+    if f and (DATA / "pmi_register.csv").exists():
+        o = _read_reg(f)
+        pm = pd.read_csv(DATA / "pmi_register.csv", keep_default_na=False)
+        have = set(pm["pmi"])
+        add = []
+        for r in o.itertuples():
+            if r.Ref in have or not r.Ref.startswith("PMI-"):
+                continue
+            title = _clean(r.Title)
+            desc = _clean(r.Description)
+            full = f"{title} {desc}"
+            a, b = parse_chainage(full)
+            add.append({"pmi": r.Ref, "date": _d(pd.Series([r.Instructed])).dt.date.iloc[0], "title": title,
+                        "kind": _pmi_kind(title, desc), "clause": "", "package_id": classify_package(full, pk),
+                        "location": fmt_location(a, b), "ch_from": a, "ch_to": b, **parse_micro(full),
+                        "ce_refs": _refs("CE", full), "ew_refs": _refs("EW", full), "gc_refs": _refs("GC", full),
+                        "pmi_refs": "", "pi_refs": _refs("PI", full), "ce_title": "", "quotation_due": None,
+                        "date_change": False, "dates_mentioned": "", "no_effect_on_cost_or_completion": False,
+                        "summary": desc or "(register entry - PDF not yet read)"})
+        if add:
+            pm = pd.concat([pm, pd.DataFrame(add)], ignore_index=True)
+            pm["n"] = pm["pmi"].str.extract(r"(\d+)")[0].astype(int)
+            pm.sort_values("n").drop(columns="n").to_csv(DATA / "pmi_register.csv", index=False)
+        print(f"pmi_register.csv: +{len(add)} PMIs from the official register ({', '.join(a['pmi'] for a in add)})")
+
+
+def add_ew_pdfs(pdf_dir: str):
+    """New EW notifications / PM replies (PDF) -> tracker facts + EW register rows."""
+    import subprocess
+    pk = _packages()
+    tr = pd.read_csv(DATA / "tracker.csv", keep_default_na=False)
+    ew = pd.read_csv(DATA / "ew_register.csv", keep_default_na=False)
+    rows, new_ew = [], []
+    for f in sorted(Path(pdf_dir).glob("EW-*_*.pdf")):
+        txt = subprocess.run(["pdftotext", "-layout", str(f), "-"], capture_output=True, text=True).stdout
+        m = re.search(r"(EW-\d+)\s+(early warning notification|reply to early warning)\s*\n\s*(.+)", txt)
+        if not m:
+            continue
+        ref, kind, title = m.group(1), m.group(2), m.group(3).strip()
+        d = re.search(r"([A-Z][a-z]{2}, \d{2}-[A-Z][a-z]{2}-\d{4}) \d{2}:\d{2}", txt)
+        date = pd.to_datetime(d.group(1), format="%a, %d-%b-%Y").date() if d else None
+        body = re.split(r"The detail of this matter is:|My reply to this matter is:", txt)
+        body = re.split(r"Yours (?:sincerely|faithfully)", body[-1])[0] if len(body) > 1 else ""
+        body = scrub(re.sub(r"\s+", " ", re.sub(r"(?m)^.*\d+ of \d+\s*$", "", body))).strip()
+        full = f"{title} {body}"
+        a, b = parse_chainage(full)
+        reply = kind.startswith("reply")
+        topic = "TOP-" + ref
+        if topic not in set(tr["topic_id"]):
+            fm = re.search(r"further to\s*ew[- ]?0*(\d+)", body, re.I)
+            topic = f"TOP-EW-{fm.group(1)}" if fm and f"TOP-EW-{fm.group(1)}" in set(tr["topic_id"]) else topic
+        rows.append({"topic_id": topic, "package_id": classify_package(full, pk), "location": fmt_location(a, b),
+                     "ch_from": a, "ch_to": b, "source": "CEMAR (EW PDF)", "date": date,
+                     "ref": ref + (" (PM reply)" if reply else ""), "summary": f"{scrub(title)} - {body[:400]}",
+                     "entry_type": "PM Reply" if reply else "Early warning raised", **parse_micro(full),
+                     "topic_title": scrub(title), "work_package": "", "impacted_activities": ""})
+        if not reply and ref not in set(ew["ew_id"]):
+            new_ew.append({"ew_id": ref, "title": scrub(title), "register_topic": "", "notified": date, "status": "Open",
+                           "package_id": classify_package(full, pk), "location": fmt_location(a, b), "ch_from": a,
+                           "ch_to": b, **parse_micro(full), "further_to": "", "absorbed_by": "", "close_reason": "",
+                           "ce_refs": _refs("CE", body), "pmi_refs": _refs("PMI", body), "last_note": body[:300]})
+    if rows:
+        tr = tr[~tr["ref"].isin([r["ref"] for r in rows])]
+        tr = pd.concat([tr, pd.DataFrame(rows)], ignore_index=True)
+        tr = tr.sort_values(["topic_id", "date"]).reset_index(drop=True)
+        tr["entry_id"] = [f"T-{i + 1:04d}" for i in range(len(tr))]
+        tr.to_csv(DATA / "tracker.csv", index=False)
+    if new_ew:
+        ew = pd.concat([ew, pd.DataFrame(new_ew)], ignore_index=True)
+        ew.to_csv(DATA / "ew_register.csv", index=False)
+    print(f"EW PDFs: {len(rows)} facts added to the tracker; {len(new_ew)} new EWs ({', '.join(e['ew_id'] for e in new_ew)})")
+
+
 STOPW = set("the and for with from change scope works work delay delays ltd s100 s320 s350 s2805 contract drawings "
             "instruction submit quotation quotations revised reply potential impact early warning".split())
 
 
 def _ttok(s):
     return {w for w in re.findall(r"[a-z0-9]+", str(s).lower()) if len(w) > 2 and w not in STOPW}
+
+
+def refs_text(t):
+    return {f"EW-{int(n)}" for n in re.findall(r"\bEW[- ]?0*(\d+)", str(t))}
 
 
 def _sim(a, b):
@@ -413,7 +580,13 @@ def build_chain():
     """EW -> PMI -> CE chain for every EW, with the coverage verdict used by the app."""
     ew = pd.read_csv(DATA / "ew_register.csv", keep_default_na=False)
     pm = pd.read_csv(DATA / "pmi_register.csv", keep_default_na=False)
-    cc = pd.read_csv(DATA / "cemar_ce.csv", keep_default_na=False) if (DATA / "cemar_ce.csv").exists() else pd.DataFrame(columns=["ce", "title"])
+    if (DATA / "ce_register.csv").exists():  # official CEMAR register (all CEs, with status)
+        cc = pd.read_csv(DATA / "ce_register.csv", keep_default_na=False)
+    else:
+        cc = pd.read_csv(DATA / "cemar_ce.csv", keep_default_na=False).assign(status="") if (DATA / "cemar_ce.csv").exists() \
+            else pd.DataFrame(columns=["ce", "title", "status"])
+    ce_status = dict(zip(cc["ce"], cc["status"]))
+    ce_num = {re.sub(r"-CNTFD", "", c): c for c in cc["ce"]}
     p6 = pd.read_csv(DATA / "ce_record.csv", keep_default_na=False)
     scan = pd.read_csv(DATA / "ew_scan.csv", keep_default_na=False).set_index("ew_id")["matched_ce"].to_dict()
     rows = []
@@ -429,8 +602,9 @@ def build_chain():
         for p in pmis.values():
             for c in filter(None, p.ce_refs.split(";")):
                 ces.setdefault(c, f"via {p.pmi}")
+        ces = {ce_num.get(k, k): v for k, v in ces.items()}
         for c in cc.itertuples():
-            if c.title and _sim(e.title, c.title) >= 0.4:
+            if c.title and (_sim(e.title, c.title) >= 0.4 or e.ew_id in refs_text(c.title)):
                 ces.setdefault(c.ce, "CEMAR CE title match")
         p6ce = scan.get(e.ew_id, "")
         if not p6ce:
@@ -439,7 +613,10 @@ def build_chain():
         if p6ce:
             ces.setdefault(f"P6 {p6ce}", "P6 CE record")
         closed = e.close_reason != ""
-        if ces:
+        st_ = [ce_status.get(c, "") for c in ces if not c.startswith("P6 ")]
+        if ces and st_ and all(x == "NOT ACCEPTED" for x in st_):
+            cov = "CE notified - NOT ACCEPTED"
+        elif ces:
             cov = "Covered by CE"
         elif pmis:
             cov = "PMI issued - check CE"
@@ -452,7 +629,9 @@ def build_chain():
         rows.append({"ew_id": e.ew_id, "title": e.title, "status": e.status, "notified": e.notified,
                      "package_id": e.package_id, "absorbed_by": e.absorbed_by,
                      "pmis": ";".join(pmis), "pmi_link": ";".join(f"{k}:{v}" for k, v in how.items()),
-                     "ces": ";".join(ces), "ce_link": ";".join(f"{k}:{v}" for k, v in ces.items()), "coverage": cov})
+                     "ces": ";".join(ces), "ce_link": ";".join(f"{k}:{v}" for k, v in ces.items()),
+                     "ce_status": ";".join(f"{c}:{ce_status.get(c, '')}" for c in ces if ce_status.get(c)),
+                     "coverage": cov})
     out = pd.DataFrame(rows)
     out.to_csv(DATA / "chain.csv", index=False)
     print("chain.csv:", out.coverage.str.split(" \\(").str[0].value_counts().to_dict())
@@ -462,11 +641,15 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--xer")
     ap.add_argument("--ewr")
+    ap.add_argument("--registers", help="folder with the CEMAR register exports (CE/TQ/GC/PMI Register CSV)")
+    ap.add_argument("--ewpdfs", help="folder with new EW-<n>_Notification.pdf / EW-<n>_Response.pdf")
     ap.add_argument("--pmis", help="folder with the CEMAR PMI PDFs (PMI-<n>_Instruction.pdf)")
     ap.add_argument("--names",help="text file with one personal name per line to redact (keep outside the repo)")
     args = ap.parse_args()
-    if args.names:
-        set_private_names(Path(args.names).read_text(encoding="utf-8").splitlines())
+    names = Path(args.names).read_text(encoding="utf-8").splitlines() if args.names else []
+    if args.registers:
+        names += register_names(args.registers)
+    set_private_names(names)
     if args.xer:
         build_programme(args.xer)
         build_activities(args.xer)
@@ -476,5 +659,9 @@ if __name__ == "__main__":
         build_ew_register(args.ewr)
     if args.pmis:
         build_pmis(args.pmis)
-    if args.ewr or args.pmis:
+    if args.registers:
+        build_registers(args.registers)
+    if args.ewpdfs:
+        add_ew_pdfs(args.ewpdfs)
+    if args.ewr or args.pmis or args.registers or args.ewpdfs:
         build_chain()

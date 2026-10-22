@@ -1,0 +1,100 @@
+ce,notified,from,title,price,days,implemented,decision,quotation_due,assessment_due,clause,status,package_id
+CE-CNTFD-1,2025-09-02,Contractor,[private individual] Septic Tank,,,,An instruction to change the Scope has not been given.,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-CNTFD-2,2025-09-16,Contractor,Client's Vehicles Scope change,,,,,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-CNTFD-3,2025-09-24,Contractor,Waste Exemption Process Legal Change (EASR),,,,,,,(X2) Change in the law where Site is located,NOT ACCEPTED,OTHER
+CE-CNTFD-4,2025-09-25,Contractor,Incorrect Scope - Contact Information,,,,It has not been demonstrated that this event has any impact on Defined Cost or Completion.,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-5,2025-10-03,Project Manager,Change to Scope: Vehicles for the Client's team,-33556.40,0,2025-12-02,,2025-12-17,2025-12-19,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-6,2025-10-21,Contractor,Guay Farmhouse Access,778.61,0,2025-12-04,The notified event is a compensation event.,2025-11-13,2025-12-19,(2) Client does not allow access to and use of Site,IMPLEMENTED,GUAY
+CE-7,2025-10-22,Project Manager,Change to Scope: S 350 Appendix A Kerbing,-68717.48,0,2026-05-14,,2026-02-19,2026-05-28,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-8,2025-11-07,Contractor,Incorrect Scope - Contact information,,,,,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-CNTFD-9,2025-11-07,Contractor,Ecology data and land access,,,,,,,(3) Client does not provide something,NOT ACCEPTED,OTHER
+CE-CNTFD-10,2025-11-07,Contractor,Increased presence of INNS,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-CNTFD-11,2025-11-07,Contractor,Water Quality Monitoring Equipment,,,,,,,(16) Client does not provide things for tests and inspections,NOT ACCEPTED,OTHER
+CE-CNTFD-12,2025-11-07,Contractor,Landowner Access,,,,,,,(3) Client does not provide something,NOT ACCEPTED,OTHER
+CE-13,2025-11-14,Project Manager,Change to Scope: Works by Others,,,,,2026-04-13,2026-10-01,(1) PM instruction changing the Scope,AWAITING ASSESSMENT,OTHER
+CE-14,2025-11-17,Project Manager,Change to Scope: S 2805 & S 3000 - Vehicles for the Client's team,-17129.90,0,2026-02-25,,2026-01-01,2026-03-12,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-15,2025-12-12,Contractor,QTS Surface Water Run-off,,,,,,,(14) A Client's liability event,NOT ACCEPTED,OTHER
+CE-CNTFD-16,2025-12-12,Contractor,Appendix 1/17 1.1.8 - PKC TM Consultation,,,,,,,(14) A Client's liability event,NOT ACCEPTED,OTHER
+CE-17,2025-12-12,Project Manager,Change to Scope: S 2805 - Mobile smart phones,-5948.45,0,2026-03-16,,2026-02-20,2026-03-23,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-18,2025-12-17,Contractor,Traffic Incident Kindallachan,,,,,,,(19) An event which stops Contractor from completing the works,NOT ACCEPTED,OTHER
+CE-19,2026-01-12,Contractor,December Weather,-,0,2026-03-16,,2026-02-04,,(13) Weather measurement occurring less than once in ten years,IMPLEMENTED,OTHER
+CE-CNTFD-20,2026-01-14,Contractor,Culvert 24 Re-alignment,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-21,2026-01-28,Contractor,Uncharted Services - Water Supply CH7+710 Southbound,8663.38,0,2026-04-30,This notified event is a compensation event under cl.60.1(12).,2026-04-01,2026-05-19,(12) Contractor encounters unexpected physical conditions,IMPLEMENTED,OTHER
+CE-22,2026-02-04,Project Manager,Change to Scope: Septic Tank at Haugh of Kilmorich,10468.12,0,2026-07-07,,2026-05-01,2026-07-03,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-23,2026-02-12,Contractor,Delays to QTS Works Resulting in Additional Staff Time,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,OTHER
+CE-24,2026-02-12,Contractor,Scottish Water Trial Holes,,,,This notified event is a compensation event under cl.60.1(12).,2026-04-15,,(12) Contractor encounters unexpected physical conditions,AWAITING QUOTATION,SW
+CE-CNTFD-25,2026-02-17,Contractor,Lack of maintenance to existing drainage impacting the works,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-26,2026-02-20,Project Manager,Change to Scope: S 320 and S 350 - Concrete,-,0,2026-05-21,,2026-03-13,,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-27,2026-02-24,Contractor,Tree Felling Stand Down near Haugh of Kilmorlich,8136.67,0,2026-05-14,,2026-04-01,2026-05-26,60.1(22) Protestor Action,IMPLEMENTED,OTHER
+CE-CNTFD-28,2026-02-27,Contractor,VMS Details,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,ITS
+CE-29,2026-03-02,Project Manager,Change to Scope: Equipment for the Client's Team,-9160.48,0,2026-07-01,,2026-06-04,2026-07-03,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-30,2026-03-04,Contractor,PS03-SSEN-0304 (Dowally),172.83,0,2026-07-01,,2026-04-08,2026-07-03,(12) Contractor encounters unexpected physical conditions,IMPLEMENTED,SSEN
+CE-CNTFD-31,2026-03-05,Contractor,S320 - Streetlighting Power supply - TQ71 Response,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,SSEN
+CE-CNTFD-32,2026-03-09,Contractor,Scottish Water - Guay Retaining Wall,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,GUAY
+CE-CNTFD-33,2026-03-09,Contractor,Openreach - Guay Filter Lane,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,BT
+CE-34,2026-03-17,Contractor,Physical Conditions Topographical Discrepancies,-,0,2026-08-18,,2026-06-01,2026-09-04,(12) Contractor encounters unexpected physical conditions,IMPLEMENTED,TOPO
+CE-CNTFD-35,2026-03-18,Contractor,Additional Tree Felling due to Windthrow Risk,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-CNTFD-36,2026-03-19,Contractor,Temporary Site Access Locations,,,,,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-37,2026-03-19,Project Manager,CE-13 Corrected Assumption - Directional Drilling and Associated Works,,,,,2026-06-26,2026-10-01,(17) PM notifies correction to assumption for CE,AWAITING ASSESSMENT,OTHER
+CE-38,2026-03-26,Contractor,UTX Delays,,,,,2026-09-03,,(5) Client or Others not in accordance with times or the Scope conditions or Site,AWAITING QUOTATION,OTHER
+CE-CNTFD-39,2026-04-14,Contractor,Middle East Conflict,,,,,,,(19) An event which stops Contractor from completing the works,NOT ACCEPTED,OTHER
+CE-40,2026-04-15,Project Manager,Change to Scope: S 320/S 2805 & Contract Drawings - Structural Finishes,5991.24,0,2026-06-12,,2026-05-06,2026-06-16,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-41,2026-04-24,Contractor,Asbestos-Containing Waste CH4270 N/B,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-CNTFD-42,2026-04-24,Contractor,Potential Hazardous Waste CH7150 S/B & CH6630 N/B,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-43,2026-04-28,Contractor,Concrete Obstructions - Guay NB CH4645,3653.55,0,2026-07-02,This compensation event has been notified correctly under cl. 60.1(12).,2026-05-26,2026-07-03,(12) Contractor encounters unexpected physical conditions,IMPLEMENTED,GUAY
+CE-44,2026-04-28,Contractor,DS-87 Rejection,,,,,2026-06-08,,(9) PM withholds acceptance for a reason not stated in contract,AWAITING QUOTATION,OTHER
+CE-45,2026-04-28,Contractor,Topographical Discrepancies Guay East CH4250-5200,-,0,2026-08-18,,2026-06-09,2026-09-04,(12) Contractor encounters unexpected physical conditions,IMPLEMENTED,GUAY
+CE-46,2026-05-05,Project Manager,Change to Scope: S 350 Access/Junction Design Vehicles,,,,,2026-05-26,2026-09-04,(1) PM instruction changing the Scope,AWAITING ASSESSMENT,OTHER
+CE-CNTFD-47,2026-05-12,Contractor,Coal Tar - General Wades Military Road,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-48,2026-05-12,Contractor,April Weather,,,,,2026-06-08,2026-10-27,(13) Weather measurement occurring less than once in ten years,AWAITING ASSESSMENT,OTHER
+CE-49,2026-05-15,Project Manager,Change to Scope: S 320 - Bee Boxes,786.34,0,2026-07-27,,2026-06-05,2026-07-31,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-50,2026-05-21,Contractor,Woodland Lodge Satellite Dish,,,,,,,60.1(22) Protestor Action,NOT ACCEPTED,OTHER
+CE-51,2026-06-03,Project Manager,Change to Scope: S 2805 & Contract Drawings - Reference Point A38,3668.26,0,2026-08-19,,2026-06-24,2026-08-26,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-CNTFD-52,2026-06-04,Contractor,DS-115 Rejection,,,,,,,(9) PM withholds acceptance for a reason not stated in contract,NOT ACCEPTED,OTHER
+CE-53,2026-06-04,Contractor,Concrete Obstructions - CH1500 S/B,10398.24,0,2026-08-26,,2026-07-01,2026-08-26,(12) Contractor encounters unexpected physical conditions,IMPLEMENTED,OTHER
+CE-54,2026-06-12,Project Manager,Change to Scope: S 905 - Traffic Management for Openreach P03-BT-0301 Phase 1,71042.33,0,2026-09-04,,2026-07-03,2026-09-04,(1) PM instruction changing the Scope,IMPLEMENTED,BT
+CE-CNTFD-55,2026-06-18,Contractor,Ledpettie Bridge LB5574 Condition,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,LEDP
+CE-56,2026-06-18,Contractor,Asbestos-Containing Waste CH4270 N/B,7039.68,0,,,2026-07-13,,(12) Contractor encounters unexpected physical conditions,QUOTED,OTHER
+CE-57,2026-06-18,Contractor,Asbestos containing Waste CH7150 S/B & CH6630 N/B,7271.28,0,,,2026-07-13,,(12) Contractor encounters unexpected physical conditions,QUOTED,OTHER
+CE-CNTFD-58,2026-06-19,Contractor,DS-151 Rejection,,,,,,,(9) PM withholds acceptance for a reason not stated in contract,NOT ACCEPTED,OTHER
+CE-CNTFD-59,2026-06-19,Contractor,DS-152 Rejection,,,,,,,(9) PM withholds acceptance for a reason not stated in contract,NOT ACCEPTED,OTHER
+CE-CNTFD-60,2026-06-19,Contractor,DS-165,,,,,,,(9) PM withholds acceptance for a reason not stated in contract,NOT ACCEPTED,OTHER
+CE-CNTFD-61,2026-06-22,Contractor,Sheet Piling Culvert 18/A9 & 19/A9 - Ground Conditions,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-CNTFD-62,2026-07-06,Contractor,DS-151 Rejection - S 320 Clause 12.12.13,,,,,,,(9) PM withholds acceptance for a reason not stated in contract,NOT ACCEPTED,OTHER
+CE-CNTFD-63,2026-07-06,Contractor,UK Steel Trade Measure,,,,,,,(X2) Change in the law where Site is located,NOT ACCEPTED,OTHER
+CE-64,2026-07-07,Contractor,Topographical Discrepancies,,,,,2026-11-05,,(12) Contractor encounters unexpected physical conditions,AWAITING QUOTATION,TOPO
+CE-65,2026-07-08,Project Manager,PM Assumption: Guay Farmhouse,,,,,2026-10-30,,(17) PM notifies correction to assumption for CE,AWAITING QUOTATION,GUAY
+CE-CNTFD-66,2026-07-08,Contractor,Kindallachan Outfall,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-67,2026-07-08,Contractor,works by others - Fencing and associated works,,,,,2026-09-11,2026-10-26,(5) Client or Others not in accordance with times or the Scope conditions or Site,AWAITING ASSESSMENT,OTHER
+CE-68,2026-07-09,Contractor,works by others - Directional Drilling,175862.25,0,,,2026-09-11,,(5) Client or Others not in accordance with times or the Scope conditions or Site,QUOTED,OTHER
+CE-CNTFD-69,2026-07-20,Contractor,Kindallachan Bridge Ground Conditions,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-70,2026-07-21,Contractor,June Weather,,,,,2026-08-21,2026-10-27,(13) Weather measurement occurring less than once in ten years,AWAITING ASSESSMENT,OTHER
+CE-CNTFD-71,2026-07-27,Contractor,Mains Power Grid Connection,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,SSEN
+CE-72,2026-07-27,Contractor,PMI-81,,,,,2026-10-19,,(1) PM instruction changing the Scope,AWAITING QUOTATION,OTHER
+CE-CNTFD-73,2026-07-27,Contractor,PMI-75,,,,,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-CNTFD-74,2026-07-27,Contractor,Kindallachan Outfall,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-CNTFD-75,2026-07-28,Contractor,SSE Failure to complete isolation works near Warren Lodge within notice period,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,OTHER
+CE-CNTFD-76,2026-07-28,Contractor,SSE Failure to complete isolation works near Site Compound within notice period,,,,,,,(5) Client or Others not in accordance with times or the Scope conditions or Site,NOT ACCEPTED,OTHER
+CE-77,2026-08-13,Project Manager,Correction of PM Assumptions: CE-67 + CE-68,,,,,2026-10-23,,(17) PM notifies correction to assumption for CE,AWAITING QUOTATION,OTHER
+CE-78,2026-08-21,Project Manager,Change to Scope: Supervision for Openreach P03-BT-0301 Phase 1,8559.75,0,,,2026-09-11,,(1) PM instruction changing the Scope,QUOTED,BT
+CE-79,2026-08-25,Contractor,Kindallachan Outfall,2099.43,0,,This notified event is a compensation event under cl.60.1(12).,2026-09-22,,(12) Contractor encounters unexpected physical conditions,QUOTED,OTHER
+CE-80,2026-08-26,Contractor,Dowally Bridge uncharted service,,,,This notified event is a compensation event under cl.60.1(12).,2026-10-29,,(12) Contractor encounters unexpected physical conditions,AWAITING QUOTATION,OTHER
+CE-CNTFD-81,2026-09-07,Contractor,Kindallachan Protestor Action,,,,,,,60.1(22) Protestor Action,NOT ACCEPTED,OTHER
+CE-CNTFD-82,2026-09-08,Contractor,Road Traffic Incidents - July,,,,,,,(19) An event which stops Contractor from completing the works,NOT ACCEPTED,OTHER
+CE-CNTFD-83,2026-09-08,Contractor,Road Traffic Incident - August,,,,,,,(19) An event which stops Contractor from completing the works,NOT ACCEPTED,OTHER
+CE-CNTFD-84,2026-09-08,Contractor,Road Traffic Incident - September,,,,,,,(19) An event which stops Contractor from completing the works,NOT ACCEPTED,OTHER
+CE-CNTFD-85,2026-09-09,Contractor,Water Quality Monitoring,,,,,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-86,2026-09-10,Project Manager,Drainage geotextile operational lifespan,-,0,2026-09-15,,,,(1) PM instruction changing the Scope,IMPLEMENTED,OTHER
+CE-87,2026-09-10,Project Manager,CE-54 Corrected Assumptions - Traffic Management for Openreach P03-BT-0301 Phase 1,,,,,2026-10-01,,(17) PM notifies correction to assumption for CE,AWAITING QUOTATION,BT
+CE-88,2026-09-10,Project Manager,CE-37 Corrected Assumption - BT Changeover Fibre Cables,,,,,2026-10-30,,(17) PM notifies correction to assumption for CE,AWAITING QUOTATION,BT
+CE-CNTFD-89,2026-09-16,Contractor,Rodding Eye Requirements - Design Rejections,,,,,,,(1) PM instruction changing the Scope,NOT ACCEPTED,OTHER
+CE-90,2026-09-17,Project Manager,Correction of PM Assumptions: CE-77,,,,,2026-10-30,,(17) PM notifies correction to assumption for CE,AWAITING QUOTATION,OTHER
+CE-91,2026-09-17,Project Manager,Change to Scope: S 350 Appendix A - NMU Construction Detail,,,,,2026-10-23,,(1) PM instruction changing the Scope,AWAITING QUOTATION,OTHER
+CE-92,2026-09-21,Contractor,Failure to respond to communications within the period for reply (GC-1332 & TQ-124),,,,,2026-10-14,,(6) PM or Supervisor give no or late response,AWAITING QUOTATION,OTHER
+CE-93,2026-10-05,Contractor,September Weather,,,,,2026-10-29,,(13) Weather measurement occurring less than once in ten years,AWAITING QUOTATION,OTHER
+CE-94,2026-10-08,Project Manager,"Change to Scope: S 350/S 2805 & Contract Drawings - A60, N42, BS04",,,,,2026-10-29,,(1) PM instruction changing the Scope,AWAITING QUOTATION,OTHER
+CE-CNTFD-95,2026-10-12,Contractor,Rotmell Access Boulder Content,,,,,,,(12) Contractor encounters unexpected physical conditions,NOT ACCEPTED,OTHER
+CE-CNTFD-96,2026-10-14,Contractor,Beaver Resistant Fencing; Additional Temporary Requirements,,,,,,,(1) PM instruction changing the Scope,AWAITING REPLY,BEAVER
+CE-CNTFD-97,2026-10-15,Contractor,Physical Conditions - Loose Silty Sand Deposits at CV19,,,,,,,(12) Contractor encounters unexpected physical conditions,AWAITING REPLY,OTHER
+CE-CNTFD-98,2026-10-15,Contractor,Coal Tar Dowally,,,,,,,(12) Contractor encounters unexpected physical conditions,AWAITING REPLY,OTHER
+CE-99,2026-10-16,Project Manager,Guay Farmhouse alterations - updated PM Assumptions,,,,,2026-11-06,,(17) PM notifies correction to assumption for CE,AWAITING QUOTATION,GUAY

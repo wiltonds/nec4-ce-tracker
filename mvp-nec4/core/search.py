@@ -46,7 +46,8 @@ def refs_in(text: str) -> set[str]:
     return {f"{a.upper()}-{int(b)}" for a, b in REF_RE.findall(str(text))}
 
 
-def build_corpus(tracker: pd.DataFrame, pmi: pd.DataFrame, ewr: pd.DataFrame, cemar: pd.DataFrame) -> pd.DataFrame:
+def build_corpus(tracker: pd.DataFrame, pmi: pd.DataFrame, ewr: pd.DataFrame, cemar: pd.DataFrame,
+                 ce: pd.DataFrame = None, tq: pd.DataFrame = None, gc: pd.DataFrame = None) -> pd.DataFrame:
     rows = []
     for r in tracker.itertuples():
         rows.append({"date": r.date, "source": "Tracker", "ref": str(r.ref).replace(" (EW meeting)", ""),
@@ -61,6 +62,26 @@ def build_corpus(tracker: pd.DataFrame, pmi: pd.DataFrame, ewr: pd.DataFrame, ce
                      "kind": "Early warning", "topic_id": "TOP-" + r.ew_id, "topic": r.title,
                      "package_id": r.package_id, "location": r.location,
                      "text": f"{r.title}. {r.last_note} {r.close_reason}"})
+    if ce is not None and len(ce):
+        for r in ce.itertuples():
+            rows.append({"date": r.notified, "source": "CE register", "ref": r.ce.replace("-CNTFD", ""),
+                         "label": f"{r.ce} ({r.status})", "kind": f"Compensation event - {r.clause}", "topic_id": "",
+                         "topic": r.title, "package_id": r.package_id, "location": "",
+                         "text": f"{r.title}. Notified by the {getattr(r, '_3', '')}. Status {r.status}. {r.decision}"})
+        cemar = cemar.iloc[0:0]  # the official register replaces the CE list derived from PMIs
+    if tq is not None and len(tq):
+        for r in tq.itertuples():
+            dl = pd.to_numeric(r.days_late, errors="coerce")
+            late = f" Replied {int(dl)} days late." if pd.notna(dl) and dl > 0 else ""
+            rows.append({"date": r.notified, "source": "TQ register", "ref": r.tq, "label": r.tq, "kind": "Technical query",
+                         "topic_id": "", "topic": r.title, "package_id": r.package_id, "location": "",
+                         "text": f"{r.title}. {r.question} Reply: {r.reply}.{late} {r.cross_ref}"})
+    if gc is not None and len(gc):
+        for r in gc.itertuples():
+            rows.append({"date": r.date, "source": "GC letters", "ref": r.gc, "label": r.gc,
+                         "kind": f"Letter from {getattr(r, '_3', '')} ({r.kind})", "topic_id": "", "topic": r.title,
+                         "package_id": r.package_id, "location": r.location,
+                         "text": f"{r.title}. {r.description} Status {r.status}."})
     for r in cemar.itertuples():
         rows.append({"date": r.first_seen, "source": "CE (from PMIs)", "ref": r.ce, "label": r.ce,
                      "kind": "Compensation event", "topic_id": "", "topic": r.title, "package_id": r.package_id,

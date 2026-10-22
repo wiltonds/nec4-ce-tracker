@@ -95,10 +95,30 @@ def registers():
     return pmi, ew, _r("chain.csv", []), _r("cemar_ce.csv", [])
 
 
+@st.cache_data
+def cemar_registers():
+    """Official CEMAR exports: CE, TQ and GC registers (no author names)."""
+    def _r(name, dates):
+        f = DATA / name
+        if not f.exists():
+            return pd.DataFrame()
+        d = pd.read_csv(f, keep_default_na=False)
+        for c in dates:
+            d[c] = pd.to_datetime(d[c], errors="coerce")
+        for c in ["days_late", "price", "days"]:
+            if c in d:
+                d[c] = pd.to_numeric(d[c], errors="coerce")
+        return d
+    return (_r("ce_register.csv", ["notified", "implemented", "quotation_due", "assessment_due"]),
+            _r("tq_register.csv", ["notified", "reply_due", "reply_date"]),
+            _r("gc_register.csv", ["date", "reply_due"]))
+
+
 @st.cache_resource
 def search_index():
     pmi, ew, _, cc = registers()
-    corpus = build_corpus(load_csv("tracker.csv", ["date"]).fillna(""), pmi, ew, cc)
+    ce, tq, gc = cemar_registers()
+    corpus = build_corpus(load_csv("tracker.csv", ["date"]).fillna(""), pmi, ew, cc, ce, tq, gc)
     return corpus, Index(corpus)
 
 
@@ -114,6 +134,7 @@ packages: pd.DataFrame = st.session_state.packages
 PKG = dict(zip(packages.package_id, packages.package)) | {"OTHER": "Other (unclassified)"}
 ACTS, RELS, AIDX = programme_data()
 PMI, EWR, CHAIN, CEMAR_CE = registers()
+CER, TQR, GCR = cemar_registers()
 SERVICE = ACTS.set_index("task_code")["service_package"].to_dict()
 ACT_LABEL = {r.task_code: f"{r.task_code} · {r.task_name[:80]}" for r in ACTS.itertuples()}
 
@@ -121,7 +142,7 @@ ACT_LABEL = {r.task_code: f"{r.task_code} · {r.task_name[:80]}" for r in ACTS.i
 st.sidebar.title("🚧 NEC4 CE Tracker")
 st.sidebar.caption("MVP - delay & compensation event control")
 PAGES = ["Tracker", "Ask the project", "Theme search", "Fragnet & narrative", "EW → PMI → CE chain", "PMI register",
-         "Ingest documents", "CE dashboard", "Timeline", "EW scan", "Draft notification", "NEC4 rules"]
+         "CEMAR registers", "Ingest documents", "CE dashboard", "Timeline", "EW scan", "Draft notification", "NEC4 rules"]
 if st.session_state.get("goto") in PAGES:
     st.session_state["nav"] = st.session_state.pop("goto")
 page = st.sidebar.radio("Go to", PAGES, key="nav")
@@ -196,6 +217,22 @@ def event_table() -> pd.DataFrame:
 
 
 COLOR = {"red": "🔴", "orange": "🟠", "green": "🟢"}
+EVENT_KEYS = {"CE-01": "ledpettie|lb5574|lb 5574", "CE-02": "GC-1385"}
+
+
+def cemar_status(eid: str) -> str:
+    """What the official CEMAR CE register says about one tracked event."""
+    k = EVENT_KEYS.get(eid)
+    if CER.empty or not k:
+        return "Not found in the CE register."
+    hit = CER[CER["title"].str.contains(k, case=False, regex=True)]
+    if hit.empty:
+        return "No compensation event found in the CEMAR CE register for this event."
+    return "CEMAR CE register: " + "; ".join(
+        f"**{h.ce}** '{h.title}' notified {h.notified:%d %b %Y} by the {h['from']} - status **{h.status}**"
+        for _, h in hit.iterrows()) + (". A CE the PM did not accept can still be disputed, or a new CE notified "
+                                       "if new facts arise (each new fact opens a new 8-week window)."
+                                       if (hit.status == "NOT ACCEPTED").all() else ".")
 
 # ---------- pages ----------
 def _first(s):
@@ -605,15 +642,17 @@ elif page == "EW → PMI → CE chain":
     k = ch["group"].value_counts()
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Gap - no PMI/CE (open)", int(k.get("Gap - no PMI/CE", 0)))
-    c2.metric("Covered by a CE", int(k.get("Covered by CE", 0)))
-    c3.metric("PMI issued - check CE", int(k.get("PMI issued - check CE", 0)))
+    c2.metric("Covered by a CE (accepted or open)", int(k.get("Covered by CE", 0)))
+    c3.metric("CE notified but NOT accepted", int(k.get("CE notified - NOT ACCEPTED", 0)))
     c4.metric("Closed / absorbed", int(k.get("Closed - no CE", 0) + k.get("Absorbed", 0)))
-    groups = ["Gap - no PMI/CE", "PMI issued - check CE", "Covered by CE", "Absorbed", "Closed - no CE"]
-    pick = st.multiselect("Show", groups, default=["Gap - no PMI/CE", "PMI issued - check CE"])
+    groups = ["Gap - no PMI/CE", "CE notified - NOT ACCEPTED", "PMI issued - check CE", "Covered by CE", "Absorbed",
+              "Closed - no CE"]
+    pick = st.multiselect("Show", groups, default=["Gap - no PMI/CE", "CE notified - NOT ACCEPTED", "PMI issued - check CE"])
     v = ch[ch["group"].isin(pick)].copy()
     v["package"] = v["package_id"].map(PKG)
     v = v.merge(EWR[["ew_id", "close_reason", "last_note"]], on="ew_id", how="left") if len(EWR) else v
-    ev = st.dataframe(v[["ew_id", "title", "package", "status", "notified", "pmis", "ces", "absorbed_by", "coverage"]],
+    ev = st.dataframe(v[["ew_id", "title", "package", "status", "notified", "pmis", "ces", "ce_status", "absorbed_by",
+                         "coverage"]],
                       hide_index=True, width="stretch", height=380, on_select="rerun", selection_mode="single-row",
                       key="chain_pick")
     st.caption("Links: 'explicit' = the PMI or notes quote the EW; 'title match' = similar titles (check it). CE numbers "
@@ -629,9 +668,10 @@ elif page == "EW → PMI → CE chain":
                 tl.append({"date": x.date.date() if pd.notna(x.date) else "", "step": "PM instruction", "ref": p,
                            "detail": f"{x.title} ({x.kind})"})
         for c in filter(None, str(r.ces).split(";")):
-            x = CEMAR_CE[CEMAR_CE["ce"] == c] if len(CEMAR_CE) else pd.DataFrame()
-            tl.append({"date": x.iloc[0]["first_seen"] if len(x) else "", "step": "Compensation event", "ref": c,
-                       "detail": x.iloc[0]["title"] if len(x) else ""})
+            x = CER[CER["ce"] == c] if len(CER) else pd.DataFrame()
+            tl.append({"date": x.iloc[0]["notified"].date() if len(x) and pd.notna(x.iloc[0]["notified"]) else "",
+                       "step": "Compensation event", "ref": c,
+                       "detail": f"{x.iloc[0]['title']} - {x.iloc[0]['status']}" if len(x) else ""})
         if str(r.absorbed_by):
             tl.append({"date": "", "step": "Closed - absorbed by", "ref": r.absorbed_by, "detail": r.get("close_reason", "")})
         elif str(r.get("close_reason", "")):
@@ -714,7 +754,7 @@ elif page == "CE dashboard":
         strict_red = r.status_strict[1] == "red"
         box = st.error if col == "red" else st.warning if (col == "orange" or strict_red) else st.success
         box(
-            f"**{r.event_id} - {EVENT_TITLES.get(r.event_id, '')}**\n\nNot yet notified as a compensation event.\n\n"
+            f"**{r.event_id} - {EVENT_TITLES.get(r.event_id, '')}**\n\n{cemar_status(r.event_id)}\n\n"
             f"- Contractor's view: latest new fact **{r.latest_ref}** on {r.latest_new_fact:%d %b %Y} "
             f"→ notify by **{r.deadline_latest:%d %b %Y}** ({lab}).\n"
             f"- Client may argue awareness from **{r.first_ref}** on {r.first_aware:%d %b %Y} "
@@ -781,9 +821,10 @@ elif page == "EW scan":
     if len(EWR):
         scan = scan.merge(EWR[["ew_id", "absorbed_by", "close_reason"]], on="ew_id", how="left").fillna(
             {"absorbed_by": "", "close_reason": ""})
-    hide_matched = st.toggle("Hide EWs already covered by a CE or a PMI (CEMAR PMIs + P6 CE record)", value=True)
+    hide_matched = st.toggle("Hide EWs already covered by an accepted/open CE or a PMI", value=True,
+                             help="EWs whose CE was NOT accepted by the PM stay visible: they may be disputed.")
     if hide_matched:
-        scan = scan[(scan["matched_ce"] == "") & (scan["ces"] == "") & (scan["pmis"] == "")]
+        scan = scan[~scan["coverage"].isin(["Covered by CE", "PMI issued - check CE"]) & (scan["matched_ce"] == "")]
     c1, c2, c3 = st.columns(3)
     c1.metric("EWs on Client / Others with no CE found", len(scan))
     c2.metric("Still open", int((scan["status"] == "Open").sum()))
@@ -804,6 +845,77 @@ elif page == "EW scan":
     st.dataframe(v[[c for c in cols if c in v.columns]], hide_index=True, width="stretch")
     st.caption("Keyword screen of the EW register of 01 Oct 2026, matched by title against the CE record in P6 rev 017 "
                "(CE-001 to CE-037). CEs notified after May 2026 are not in that record - confirm against CEMAR.")
+
+elif page == "CEMAR registers":
+    st.title("CEMAR registers")
+    st.caption("Official exports from CEMAR (21 Oct 2026): every compensation event, technical query and general "
+               "communication. Author names are removed; only roles (Contractor / Project Manager) are kept.")
+    if CER.empty and TQR.empty and GCR.empty:
+        st.warning("No register exports found - run scripts/build_data.py --registers <folder>.")
+        st.stop()
+    t1, t2, t3 = st.tabs(["Compensation events", "Late PM replies (cl. 60.1(6))", "Letters (GC)"])
+    with t1:
+        ce = CER.copy()
+        if F_PKG:
+            ce = ce[ce["package_id"].isin(F_PKG)]
+        if F_TXT:
+            ce = ce[ce["title"].str.contains(F_TXT, case=False) | ce["ce"].str.contains(F_TXT, case=False)]
+        k = ce["status"].value_counts()
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("CEs notified", len(ce))
+        c2.metric("Not accepted by the PM", int(k.get("NOT ACCEPTED", 0)))
+        c3.metric("Implemented", int(k.get("IMPLEMENTED", 0)))
+        c4.metric("Open (quotation / assessment / reply)", int(len(ce) - k.get("NOT ACCEPTED", 0) - k.get("IMPLEMENTED", 0)))
+        by = ce.groupby(["clause", "status"]).size().reset_index(name="CEs")
+        fig = px.bar(by, y="clause", x="CEs", color="status", orientation="h", height=380)
+        fig.update_layout(margin=dict(l=0, r=0, t=10, b=0), yaxis_title=None, legend_title=None)
+        st.plotly_chart(fig, width="stretch")
+        st.caption("CE-CNTFD-n = notified by the Contractor and not accepted by the PM as a compensation event. "
+                   "These are the ones to review for dispute or re-notification when new facts arise.")
+        stt = st.multiselect("Status", sorted(ce["status"].unique()), key="ce_status_f")
+        v = ce[ce["status"].isin(stt)] if stt else ce
+        v = v.assign(package=v["package_id"].map(PKG))
+        for c in ["notified", "implemented", "quotation_due", "assessment_due"]:
+            v[c] = v[c].dt.date
+        st.dataframe(v[["ce", "notified", "from", "title", "clause", "status", "price", "decision", "quotation_due",
+                        "package"]], hide_index=True, width="stretch", height=420)
+    with t2:
+        st.markdown("Under NEC4 the PM must reply within the period for reply. A late or missing reply can be a "
+                    "compensation event (cl. 60.1(6)). These records show where that happened.")
+        tq = TQR[TQR["days_late"].notna() | (TQR["status"] == "OVERDUE")].copy()
+        tq["days_late"] = tq["days_late"].fillna((pd.Timestamp(today) - tq["reply_due"]).dt.days)
+        gc = GCR[GCR["status"].isin(["OVERDUE", "AWAITING REPLY"]) & (GCR["from"] == "Contractor")].copy()
+        gc["days_late"] = (pd.Timestamp(today) - gc["reply_due"]).dt.days
+        c1, c2, c3 = st.columns(3)
+        c1.metric("TQs answered late or overdue", len(tq))
+        c2.metric("Contractor letters with PM reply overdue", int((gc["status"] == "OVERDUE").sum()))
+        c3.metric("CEs already notified for late replies", int(CER["clause"].str.startswith("(6)").sum()))
+        st.markdown("**Technical queries**")
+        tqv = tq.assign(notified=tq["notified"].dt.date, reply_due=tq["reply_due"].dt.date, reply_date=tq["reply_date"].dt.date)
+        st.dataframe(tqv[["tq", "notified", "title", "reply_due", "reply_date", "days_late", "status"]]
+                     .sort_values("days_late", ascending=False), hide_index=True, width="stretch")
+        st.markdown("**Contractor letters (GC) still waiting for the PM's reply**")
+        gcv = gc.assign(date=gc["date"].dt.date, reply_due=gc["reply_due"].dt.date)
+        st.dataframe(gcv[["gc", "date", "from", "title", "reply_due", "days_late", "status"]]
+                     .sort_values("days_late", ascending=False), hide_index=True, width="stretch", height=360)
+        st.caption("Check each one against the period for reply in the Contract Data and whether it affected the "
+                   "work. Only the Contractor's communications that required a PM reply are relevant.")
+    with t3:
+        g = GCR.copy()
+        if F_PKG:
+            g = g[g["package_id"].isin(F_PKG)]
+        if F_TXT:
+            g = g[g["title"].str.contains(F_TXT, case=False) | g["description"].str.contains(F_TXT, case=False)
+                  | g["gc"].str.contains(F_TXT, case=False)]
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Letters", len(g))
+        c2.metric("From the PM", int((g["from"] == "Project Manager").sum()))
+        c3.metric("Conversation threads ('Further to')", int(g["further_to"].ne("").sum()))
+        g = g.assign(date=g["date"].dt.date, package=g["package_id"].map(PKG))
+        st.dataframe(g[["gc", "date", "from", "title", "kind", "further_to", "status", "package", "description"]],
+                     hide_index=True, width="stretch", height=480,
+                     column_config={"description": st.column_config.TextColumn(width="large")})
+        st.caption("Use 'Ask the project' → Document to see what happened before and after any letter.")
 
 elif page == "Ingest documents":
     st.title("Ingest new documents")

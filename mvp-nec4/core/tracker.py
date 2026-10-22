@@ -27,8 +27,11 @@ DEFAULT_PACKAGES = [
 ]
 
 NAME_RE = re.compile(r"\b(Mr|Mrs|Ms|Miss|Dr)\.?\s+[A-Z][a-zA-Z\-]+(?:'s\b|(?:\s+[A-Z][a-zA-Z\-]+(?:'s\b)?)?)")
+SIGN_RE = re.compile(r"[A-Z][a-z]+ [A-Z][a-zA-Z'\-]+?\s?on behalf of\s*(?:[A-Z][a-z]+ [A-Z][a-zA-Z'\-]+)?")
+INITIAL_RE = re.compile(r"\b[A-Z]\.\s?[A-Z][a-z]{2,}(?:-[A-Z][a-z]+)?\b")
+ACCESS_RE = re.compile(r"\b(Access|access|Login|login)\s*-\s*[A-Z][a-z]+ [A-Z][a-zA-Z'\-]+")
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
-PHONE_RE = re.compile(r"(\+?\d[\d\s()-]{8,}\d)")
+PHONE_RE = re.compile(r"(?<![\d/.-])(?:\+44\s?\(?0?\)?\s?|0)\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,4}(?![\d/.-])")
 CH_KM_RE = re.compile(r"\bch\.?\s*:?\s*(\d{1,2})\s*\+\s*(\d{3})", re.I)
 CH_RE = re.compile(r"\bch\.?\s*:?\s*(\d{3,5})(?:\s*(?:-|–|to)\s*(?:ch\.?\s*)?(\d{3,5}))?", re.I)
 STOP = set("the a an of to and in for on at by with from is are be as this that it its or not no new "
@@ -41,7 +44,16 @@ _EXTRA_NAMES: list[re.Pattern] = []
 def set_private_names(names: list[str]):
     """Extra names to redact (kept in a local file outside the repo, see scripts/build_data.py --names)."""
     global _EXTRA_NAMES
-    _EXTRA_NAMES = [re.compile(r"\b" + re.escape(n.strip()) + r"(?:'s|s)?\b", re.I) for n in names if n.strip()]
+    full = {n.strip() for n in names if n.strip()}
+    surnames = {n.split()[-1] for n in full if len(n.split()) > 1 and len(n.split()[-1]) > 3}
+    # full names: no word boundaries (exports often glue words: "2026.Gemma SmithProject Manager")
+    pats = [re.compile(re.escape(n) + r"(?:'s)?", re.I) for n in sorted(full, key=len, reverse=True)]
+    firsts = {n.split()[0] for n in full if len(n.split()) > 1 and len(n.split()[0]) > 3}
+    firsts |= {"Rob" for n in full if n.startswith("Robert ")}
+    pats += [re.compile(r"\b" + re.escape(n) + (r"(?:'s)?" if len(n) >= 6 else r"(?:'s)?(?![a-z])"))
+             for n in sorted(surnames)]  # case-sensitive; long surnames also when glued ("Smithon behalf")
+    pats += [re.compile(r"\b" + re.escape(n) + r"(?![a-z])") for n in sorted(firsts)]
+    _EXTRA_NAMES = pats
 
 
 def scrub(text: str) -> str:
@@ -49,6 +61,9 @@ def scrub(text: str) -> str:
     text = EMAIL_RE.sub("[email]", str(text))
     text = PHONE_RE.sub("[phone]", text)
     text = NAME_RE.sub("[private individual]", text)
+    text = SIGN_RE.sub("[person] on behalf of [person]", text)
+    text = INITIAL_RE.sub("[person]", text)
+    text = ACCESS_RE.sub(r"\1 - [person]", text)
     for rx in _EXTRA_NAMES:
         text = rx.sub("[person]", text)
     return text

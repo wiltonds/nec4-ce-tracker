@@ -9,8 +9,10 @@ Protótipo em Streamlit para o planejamento de atrasos em contratos **NEC4 ECC**
 4. **EW → PMI → CE chain** e **PMI register**: cadeia de cada EW até PMI e CE; os buracos são oportunidades, o que já tem CE ou PMI não é sugerido de novo.
 5. **Ingest documents**: lê PDF, Word ou e-mail e propõe pacote, assunto, local e atividades impactadas, depois inclui no tracker.
 6. **CE dashboard**, **Timeline** e **Draft notification**: controle dos prazos de 8 semanas (cl. 61.3) e minuta de notificação de evento compensatório.
-7. **EW scan**: early warnings sobre cliente ou terceiros sem CE nem PMI, inclusive os fechados com "absorvido por".
-8. **NEC4 rules**: prazos e gatilhos do ECC4.
+7. **CEMAR registers**: CEs com status (aceito, não aceito, em cotação), respostas atrasadas do PM (TQ e cartas, cl. 60.1(6)) e todas as cartas GC.
+8. **Ask the project**: pergunta em linguagem natural ou escolha de um documento, com tudo o que veio antes e depois.
+9. **EW scan**: early warnings sobre cliente ou terceiros sem CE nem PMI, inclusive os fechados com "absorvido por".
+10. **NEC4 rules**: prazos e gatilhos do ECC4.
 
 Classificação em 3 níveis: **micro** (fase, zona, sentido, estaca), **pacote de serviço do P6** (2 primeiros níveis da WBS) e **tema macro** (os 9 assuntos). Os assuntos principais ficam em `data/packages.csv` (id, nome, palavras-chave; `re:` = expressão regular). Os filtros da barra lateral (assunto, texto, estaca) valem para todas as abas.
 
@@ -22,6 +24,7 @@ Os dados vêm do projeto A9 (caso **Ledpettie Bridge**) e estão **pseudonimizad
 - `data/activities.csv` e `data/relationships.csv`: as 3.385 atividades e 6.998 vínculos do P6 rev 017, usados para sugerir atividades e calcular o impacto.
 - `data/ce_record.csv`: CE-001 a CE-037, registrados no próprio P6.
 - `data/pmi_register.csv`: PMI-1 a PMI-111 lidos dos PDFs do CEMAR; `data/cemar_ce.csv`: 47 CEs citados nos PMIs.
+- `data/ce_register.csv`, `data/tq_register.csv`, `data/gc_register.csv`: registros oficiais exportados do CEMAR em 21/10/2026 (99 CEs, 133 TQs, 1.501 cartas), sem nomes de autores.
 - `data/ew_register.csv`: os 222 EWs (abertos e fechados) com "absorvido por"; `data/chain.csv`: cadeia EW → PMI → CE.
 
 Mesmo sem nomes, esses dados continuam **confidenciais** (cl. 29 do contrato). Não publique o repositório.
@@ -30,7 +33,8 @@ Mesmo sem nomes, esses dados continuam **confidenciais** (cl. 29 do contrato). N
 
 ```bash
 python scripts/build_data.py --xer caminho/programa.xer --ewr "caminho/Early Warning Register.xlsx" \
-    --pmis pasta_com_os_PDFs_de_PMI --names nomes_privados.txt
+    --pmis pasta_com_os_PDFs_de_PMI --registers pasta_com_os_CSV_do_CEMAR --ewpdfs pasta_com_EWs_novos \
+    --names nomes_privados.txt
 ```
 
 A leitura dos PMIs usa o `pdftotext` (pacote poppler-utils). Os arquivos brutos (.xer, registros, PDFs) e a lista de nomes a apagar (`--names`, um por linha) ficam **fora** do repositório.

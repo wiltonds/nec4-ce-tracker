@@ -1,223 +1,226 @@
-ew_id,title,status,notified,package_id,absorbed_by,pmis,pmi_link,ces,ce_link,coverage
-EW-222,Openreach Delays - Soil Nailing,Open,2026-09-30,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-221,Outstanding Baseline Data for Groundwater and Private Water Supplies,Open,2026-09-30,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-220,In situ WQM equipment (Ongoing Equipment Issues),Open,2026-09-30,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-219,Handover for PWS monitoring,Open,2026-09-30,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-218,ITS Methodology Change,Open,2026-09-30,ITS,,,,,,Gap - no PMI/CE (opportunity)
-EW-217,Openreach delays - Mainline Drainage,Open,2026-09-30,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-216,Land Access Restrictions for PWS (and other) monitoring / surveys,Open,2026-09-30,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-215,Banaghers HSE Incident,Open,2026-09-30,GUAY,,,,,,Gap - no PMI/CE (opportunity)
-EW-214,NatureScot Bat licences,Open,2026-09-30,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-213,Rainfall w/c 28/09/26,Open,2026-09-29,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-212,Culvert WF47 and WF49 Topographical issues,Open,2026-09-29,TOPO,,,,,,Gap - no PMI/CE (opportunity)
-EW-211,Road Traffic Incident Dunkeld 28/09/2026,Open,2026-09-29,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-210,Boundaries of the Site - Land Made Available,Open,2026-09-28,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-209,Environmental and Ecological Compliance by Others - Temporary Beaver Fencing,Open,2026-09-24,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-208,Hydrophobic Pore Liner,Open,2026-09-24,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-207,Landscape Clerk of Works Attendance,Open,2026-09-24,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-206,Hydrophobic Pore Liner Application Requirements for Culverts - Cl.12.14.9 of S 320,Open,2026-09-24,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-205,Loss of Water Pressure,Open,2026-09-24,SW,,,,,,Gap - no PMI/CE (opportunity)
-EW-204,Guay Farmhouse - Mill Lade Realignment - Winter Working,Open,2026-09-15,GUAY,,,,,,Gap - no PMI/CE (opportunity)
-EW-203,New Retaining Wall at Ch5900,Open,2026-09-11,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-202,Dowally to Kindallachan Bus Stop Location - Reference Point BS04/N42,Open,2026-09-11,OTHER,,PMI-107,PMI-107:explicit,CE-94,CE-94:via PMI-107,Covered by CE
-EW-201,Reference Point A60 Incorrect Location,Open,2026-09-11,OTHER,,PMI-107,PMI-107:explicit,CE-94,CE-94:via PMI-107,Covered by CE
-EW-200,Impact of Earthworks on overland route between Rotmell Road and URX02 at Ch2950m,Open,2026-09-09,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-199,Road Traffic Incident 07/09/2026,Closed,2026-09-07,OTHER,,,,,,Closed - no CE
-EW-198,Culvert Waterproofing - Scope & DMRB Interpretation,Open,2026-09-07,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-197,Kindallachan Works Interference,Closed,2026-09-01,OTHER,,,,,,Closed - no CE
-EW-196,Kindallachan Works Incident 23.08.2026,Closed,2026-08-27,OTHER,EW-197,,,P6 CE-018,P6 CE-018:P6 CE record,Covered by CE
-EW-195,Potential delay to completion of Guay Farmhouse section 1 works,Open,2026-08-27,GUAY,,,,CE-6;CE-65,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match,Covered by CE
-EW-194,Seed Mix Availability,Open,2026-08-26,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-193,Section 1N Boundaries of Site,Open,2026-08-26,ITS,,,,,,Gap - no PMI/CE (opportunity)
-EW-192,URX Delays - Earthworks impact,Open,2026-08-25,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-191,Potential Additional Traffic Signs,Open,2026-08-24,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-190,Road Traffic Collision,Closed,2026-08-17,OTHER,,,,,,Closed - no CE
-EW-189,Rotmell Access Boulder Content,Open,2026-08-17,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-188,BTOR Change Over Fibre Cables,Open,2026-08-14,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-187,Gate at Kindallachan Pond Complex,Closed,2026-08-13,BT,,,,,,Closed - no CE
-EW-186,Guay Farmhouse Programme Impact,Open,2026-08-06,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,Covered by CE
-EW-185,Delays at Dowally North due to PKC Planning Department,Closed,2026-08-06,OTHER,,,,,,Closed - no CE
-EW-184,Scope Interpretation,Open,2026-08-05,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-183,Dowally Bridge,Open,2026-08-03,OTHER,,,,CE-80,CE-80:CEMAR CE title match,Covered by CE
-EW-182,Potential Coal Tar Dowally Bridge,Open,2026-07-31,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-181,Windthrow Outside Boundaries of the Site,Open,2026-07-31,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-180,Kindallachan Test Pile Failure - Alternative Options,Open,2026-07-29,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-179,CEDP-027 - Period of Reply,Closed,2026-07-28,OTHER,,,,,,Closed - no CE
-EW-178,Road Traffic Collision,Closed,2026-07-27,OTHER,,,,,,Closed - no CE
-EW-177,Japanese Knotweed  CH1700SB,Open,2026-07-27,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-176,QTS TM Cancellation,Closed,2026-07-17,BT,,,,,,Closed - no CE
-EW-175,Boulder obstructions Rotmell,Closed,2026-07-14,OTHER,EW-189,,,,,Absorbed (EW-189)
-EW-174,Non-Structural Culvert Headwalls,Open,2026-07-14,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-173,Kindallachan Test Pile Failure,Closed,2026-07-13,OTHER,EW-180,,,,,Absorbed (EW-180)
-EW-172,Delayed revision of works by Others assumptions affecting programme accuracy and impact assessment,Open,2026-07-13,GUAY,,,,,,Gap - no PMI/CE (opportunity)
-EW-171,1 Dowally Cottages CPO / Boundaries of the Site,Open,2026-07-09,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-170,Kindallachan Outfall,Closed,2026-07-08,OTHER,,,,CE-79,CE-79:CEMAR CE title match,Covered by CE
-EW-169,Reference Point A45 Re-design,Open,2026-07-03,OTHER,,PMI-55,PMI-55:explicit,CE-46,CE-46:via PMI-55,Covered by CE
-EW-168,UK Steel Trade Measure,Closed,2026-06-30,OTHER,,,,,,Closed - no CE
-EW-167,Noise and Vibration Cumulative Impact,Closed,2026-06-25,OTHER,,,,,,Closed - no CE
-EW-166,Delayed revision of works by Others assumptions affecting programme accuracy & impact assessment,Closed,2026-06-23,OTHER,EW-172,,,,,Absorbed (EW-172)
-EW-165,Conditional Consultee Approval Response,Closed,2026-06-19,OTHER,,,,,,Closed - no CE
-EW-164,DS-168/169 Rejection,Closed,2026-06-19,OTHER,,,,,,Closed - no CE
-EW-163,Heavy Rainfall w/c 15/06/2026,Closed,2026-06-19,OTHER,,,,,,Closed - no CE
-EW-162,DS-165/152/151 Rejection,Open,2026-06-19,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-161,Concrete Obstructions CH-800,Closed,2026-06-19,OTHER,EW-175,,,CE-43;CE-53,CE-43:CEMAR CE title match;CE-53:CEMAR CE title match,Covered by CE
-EW-160,QTS UTX As-Builts,Closed,2026-06-19,OTHER,,,,,,Closed - no CE
-EW-159,Mill Lade Listed Building Consent,Open,2026-06-19,GUAY,,,,,,Gap - no PMI/CE (opportunity)
-EW-158,Sheet Piling Culvert 18/A9 & 19/A9 - Ground Conditions,Open,2026-06-18,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-157,Existing White Lining,Agreed to close,2026-06-17,OTHER,,,,,,Closed - no CE
-EW-156,NatureScot Bat licences_bat buildings and structures,Open,2026-06-12,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-155,Culvert 18 Cascade Trial Panel,Open,2026-06-12,OTHER,,PMI-52,PMI-52:explicit,CE-40,CE-40:via PMI-52,Covered by CE
-EW-154,DS-141 S21 Comment Responses - Surcharge loading,Open,2026-06-09,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-153,Quality and Timing of S 4000 Communications Materials,Open,2026-06-05,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-152,Pile Testing Requirements,Open,2026-06-01,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-151,Scottish Water leak CH4450 (Approx),Closed,2026-05-29,SW,,,,,,Closed - no CE
-EW-150,Potential for additional Beaver Constraints,Open,2026-05-29,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-149,Vehicle Fire on A9 South of Dunkeld,Closed,2026-05-27,OTHER,,,,,,Closed - no CE
-EW-148,Works Progressing Without an Accepted Design,Open,2026-05-21,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-147,Hydrophobic pore liner S 320 Cl 12.14.9,Open,2026-05-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-146,Ledpettie Bridge LB5574 Condition,Open,2026-05-20,LEDP,,,,,,Gap - no PMI/CE (opportunity)
-EW-145,Turning Head T04,Open,2026-05-20,TOPO,,,,,,Gap - no PMI/CE (opportunity)
-EW-144,ITS CCTV Visibility from ITS Site 1,Open,2026-05-20,ITS,,,,,,Gap - no PMI/CE (opportunity)
-EW-143,P03/S13 Structure within Scheduled Monument Area,Open,2026-05-20,ITS,,,,,,Gap - no PMI/CE (opportunity)
-EW-142,Dry Mammal Underpass at Chainage 7800 Ground Level Discrepancy,Open,2026-05-20,TOPO,,,,,,Gap - no PMI/CE (opportunity)
-EW-141,DMU Feasibility Issue at Ch. 3550,Open,2026-05-20,TOPO,,,,,,Gap - no PMI/CE (opportunity)
-EW-140,Culvert 39 Downstream GI Access,Open,2026-05-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-139,Beaver Translocation and stakeholder engagement,Open,2026-05-20,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-138,East Dowally - Existing Road Noise Levels,Open,2026-05-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-137,Design of the Ecology / Flood Compensatory Flood Storage Pond at chainage 6500,Open,2026-05-20,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-136,SEPA Water Run-off Permits,Open,2026-05-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-135,Safety Barrier at S05 on Dunkeld to Rotmell Road,Open,2026-05-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-134,Woodland Lodge Satellite Dish,Open,2026-05-19,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-133,Invasives - Bluebell Presence,Open,2026-05-19,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-132,Guay Farmhouse - Maternity Bat Roost and Nesting Swallows,Open,2026-05-19,GUAY,,PMI-111,PMI-111:explicit,CE-65,CE-65:via PMI-111,Covered by CE
-EW-131,Existing White Lining,Open,2026-05-19,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-130,TM Maintenance /Supervision,Open,2026-05-18,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-129,Scottish Water Strike,Closed,2026-05-15,SW,,,,CE-24,CE-24:CEMAR CE title match,Covered by CE
-EW-128,Openreach Trenching,Open,2026-05-15,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-127,Openreach TM Requirements,Closed,2026-05-15,BT,,,,,,Closed - no CE
-EW-126,Right hand turns construction traffic,Open,2026-05-15,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-125,Noise Complaint Unplanned and Unnotified works at Kindallachan on Saturday 9th May 2026,Open,2026-05-12,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-124,1 Dowally Cottages CPO / Boundaries of the Site,Open,2026-05-08,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-123,Ecological and Environmental Compliance By Others,Open,2026-05-08,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-122,Design submission not returned within period for reply,Open,2026-05-08,GUAY,,,,,,Gap - no PMI/CE (opportunity)
-EW-121,Non-Structural Culvert Headwalls - SDS,Open,2026-05-07,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-120,DS-87 Rejection,Open,2026-04-28,OTHER,,,,CE-44,CE-44:CEMAR CE title match,Covered by CE
-EW-119,Concrete Obstructions - Guay NB CH4645,Open,2026-04-28,GUAY,,,,CE-43;CE-53,CE-43:CEMAR CE title match;CE-53:CEMAR CE title match,Covered by CE
-EW-118,Culvert 16 LMA,Open,2026-04-22,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-117,BT Cable Pulled during De-Stumping Works,Closed,2026-04-22,BT,,,,,,Closed - no CE
-EW-116,Network Rail/QTS UTX Works sinkhole at UTX3,Open,2026-04-21,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-115,Potential HDD Delays - SSEN,Open,2026-04-17,SSEN,,,,,,Gap - no PMI/CE (opportunity)
-EW-114,Reference Points A38,Open,2026-04-17,OTHER,,PMI-67,PMI-67:explicit,CE-51,CE-51:via PMI-67,Covered by CE
-EW-113,Delay to partial demolition and reconstruction of the walls at Guay Farmhouse,Open,2026-04-15,GUAY,,,,,,Gap - no PMI/CE (opportunity)
-EW-112,Coal Tar - General Wades Road,Open,2026-04-14,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-111,Septic tank at Kindallachan _Croft Croy Cottages,Closed,2026-03-26,GUAY,EW-170,,,,,Absorbed (EW-170)
-EW-110,Beaver Meeting_SPP _Landscape_ Design 25.03.2026,Open,2026-03-26,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-109,QTS directional drilling and use of bentonite,Closed,2026-03-26,OTHER,,,,,,Closed - no CE
-EW-108,Risk to Sectional Completion (1N)  - Boundaries of Site,Open,2026-03-25,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-107,Beaver Translocation CH6000,Open,2026-03-20,BEAVER,,,,,,Gap - no PMI/CE (opportunity)
-EW-106,CEMAR functionality CL 17.1,Closed,2026-03-19,OTHER,,,,,,Closed - no CE
-EW-105,Absence of Updated BT Openreach Programme and Risk to Coordination of Works,Agreed to close,2026-03-18,BT,,PMI-18,PMI-18:explicit,CE-13,CE-13:via PMI-18,Covered by CE
-EW-104,Side Road Drainage,Open,2026-03-17,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-103,Structural Finishes,Closed,2026-03-17,OTHER,PMI-52;PMI-53,PMI-52;PMI-53,PMI-52:explicit;PMI-53:explicit,CE-40,CE-40:via PMI-52,Covered by CE
-EW-102,Potential Asbestos,Open,2026-03-13,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-101,Environmental Monitoring Equipment being interfered with whilst deployed on site,Closed,2026-03-13,OTHER,,,,,,Closed - no CE
-EW-100,Tree Felling during Bird Nesting Season,Open,2026-03-12,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-99,Additional Tree Felling due to Windthrow Risk,Open,2026-03-12,OTHER,,,,P6 CE-035,P6 CE-035:P6 CE record,Covered by CE
-EW-98,Scottish Water - Guay Retaining Wall,Open,2026-03-06,SW,,,,P6 CE-032,P6 CE-032:P6 CE record,Covered by CE
-EW-97,Openreach - Guay Filter Lane,Closed,2026-03-06,BT,EW-105,,,P6 CE-033,P6 CE-033:P6 CE record,Covered by CE
-EW-96,Potential Asbestos,Open,2026-03-06,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-95,Ledpettie Bridge Condition,Closed,2026-03-05,LEDP,EW-146,,,,,Absorbed (EW-146)
-EW-94,Buzzard Nest CH4800,Open,2026-03-05,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-93,P03/S12 Existing Network Rail Bridge - Scour Assessment,Open,2026-03-03,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-92,Middle East Conflict,Open,2026-03-03,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-91,Unsuitable Existing Control Network,Open,2026-02-27,SURVEY,,,,,,Gap - no PMI/CE (opportunity)
-EW-90,Newly Identified bat roost Chainage 4810 Southbound,Open,2026-02-27,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-89,S320 Clause 12.9.19 - Retaining Wall Finishes,Closed,2026-02-25,OTHER,,,,,,Closed - no CE
-EW-88,QTS Fencing Works,Closed,2026-02-24,BT,,,,,,Closed - no CE
-EW-87,Land Slide at Rotmell Road/A9,Closed,2026-02-24,OTHER,,,,,,Closed - no CE
-EW-86,[private individual] Septic Tank,Open,2026-02-20,SSEN,,PMI-35,PMI-35:explicit,CE-22;P6 CE-001,CE-22:via PMI-35;P6 CE-001:P6 CE record,Covered by CE
-EW-85,Diesel Spill River Tay - Killin,Closed,2026-02-20,OTHER,,,,,,Closed - no CE
-EW-84,SEPA Registration off-site disposal,Closed,2026-02-19,OTHER,,,,,,Closed - no CE
-EW-83,Side Road Drainage - Oversized Pipework,Closed,2026-02-19,OTHER,,,,,,Closed - no CE
-EW-82,Tree Felling Stand Down near Haugh of Kilmorlich,Closed,2026-02-18,OTHER,EW-86,,,CE-27;P6 CE-027,CE-27:CEMAR CE title match;P6 CE-027:P6 CE record,Covered by CE
-EW-81,VMS Details,Open,2026-02-12,ITS,,,,P6 CE-028,P6 CE-028:P6 CE record,Covered by CE
-EW-80,QTS Delays,Closed,2026-02-12,BT,,,,,,Closed - no CE
-EW-79,Culvert 25 Levels,Open,2026-02-11,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-78,Badger Set Ch.850,Open,2026-02-10,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-77,Design Certificates not returned,Closed,2026-02-03,OTHER,,,,,,Closed - no CE
-EW-76,Incorrect Topographical Information,Open,2026-02-03,TOPO,,,,P6 CE-004,P6 CE-004:P6 CE record,Covered by CE
-EW-75,Survey Control Points,Open,2026-02-02,SURVEY,,,,,,Gap - no PMI/CE (opportunity)
-EW-74,Culvert 24 Design Flood Compliance,Closed,2026-02-02,OTHER,,,,,,Closed - no CE
-EW-73,SW Main Clash with Tree Felling Ch7500-7800,Open,,SW,,,,,,Gap - no PMI/CE (opportunity)
-EW-72,S320 - Streetlighting Power supply -  TQ71 Response,Open,2026-02-01,SSEN,,,,P6 CE-031,P6 CE-031:P6 CE record,Covered by CE
-EW-71,Concrete Specification Clarification,Closed,2026-01-28,OTHER,PMI-39,PMI-39,PMI-39:explicit,CE-26,CE-26:via PMI-39,Covered by CE
-EW-70,Existing Drainage Network - Disruption to Works,Open,2026-01-28,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-69,C502 Rotmell Tree Felling,Closed,2026-01-28,OTHER,,,,,,Closed - no CE
-EW-68,Culvert 35 Diameter,Open,2026-01-27,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-67,Guay Farmhouse Watercourse,Closed,2026-01-23,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,Covered by CE
-EW-66,Weather Delays,Closed,2026-01-22,OTHER,,,,CE-19;CE-48;CE-70;CE-93;P6 CE-019,CE-19:CEMAR CE title match;CE-48:CEMAR CE title match;CE-70:CEMAR CE title match;CE-93:CEMAR CE title match;P6 CE-019:P6 CE record,Covered by CE
-EW-65,Demolition of Guay Cattle Shed,Closed,2026-01-22,GUAY,,PMI-18;PMI-30,PMI-18:explicit;PMI-30:title match 100%,CE-13,CE-13:EW notes,Covered by CE
-EW-64,Quality and Timing of S 4000 Communication Materials,Closed,2026-01-21,OTHER,,,,,,Closed - no CE
-EW-63,Increased Site Clearance,Open,2026-01-14,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-62,Water Quality Monitoring Equipment Installation,Open,2026-01-12,OTHER,,,,P6 CE-011,P6 CE-011:P6 CE record,Covered by CE
-EW-61,Dalmarnock Fishings Access,Closed,2026-01-08,OTHER,,,,,,Closed - no CE
-EW-60,Network Rail Possession,Closed,2026-01-08,OTHER,,,,,,Closed - no CE
-EW-59,06/01/2026 Weather,Closed,2026-01-08,OTHER,,,,,,Closed - no CE
-EW-58,Weather Delay - Main Compound,Closed,2026-01-05,OTHER,,,,,,Closed - no CE
-EW-57,PS03-SSEN-0304 (Dowally),Open,2026-01-05,SSEN,,,,CE-30;P6 CE-030,CE-30:CEMAR CE title match;P6 CE-030:P6 CE record,Covered by CE
-EW-56,Scottish Water - Asset not located,Open,2025-12-19,SW,,,,,,Gap - no PMI/CE (opportunity)
-EW-55,TQ 71 - Period of Response (13.3),Closed,2025-12-18,OTHER,,,,,,Closed - no CE
-EW-54,Scottish Water Trial Excavations,Open,2025-12-16,SW,,,,CE-24;P6 CE-024,CE-24:CEMAR CE title match;P6 CE-024:P6 CE record,Covered by CE
-EW-53,Openreach - General Wades Road,Closed,2025-12-12,BT,,,,,,Closed - no CE
-EW-52,Traffic Scotland Contact,Closed,2025-12-12,ITS,,,,,,Closed - no CE
-EW-51,GC473 - Period of Response (CEDP-004),Closed,2025-12-11,OTHER,,,,,,Closed - no CE
-EW-50,Site Access Construction/ Tree Felling - Delay Risk,Open,2025-12-11,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-49,Appendix 1/17 1.1.8 - PKC TM Consultation,Open,2025-12-11,OTHER,,,,P6 CE-016,P6 CE-016:P6 CE record,Covered by CE
-EW-48,Openreach - Circet RAMS/ Availability,Closed,2025-12-11,BT,,,,,,Closed - no CE
-EW-47,River Tay Flood warnings,Closed,2025-12-10,OTHER,,,,,,Closed - no CE
-EW-46,Storm Bram Yellow Warnings 09 &10/12/25,Closed,2025-12-09,OTHER,,,,,,Closed - no CE
-EW-45,QTS Surface Water Run-off,Closed,2025-12-05,OTHER,,,,P6 CE-015,P6 CE-015:P6 CE record,Covered by CE
-EW-44,QTS RAMS,Closed,2025-12-02,OTHER,,,,,,Closed - no CE
-EW-43,Quality of Submissions,Open,2025-11-25,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-42,Site Safety - Induction of Others,Closed,2025-11-25,OTHER,,,,,,Closed - no CE
-EW-41,Site Safety - Induction of Others,Closed,2025-11-21,OTHER,,,,,,Closed - no CE
-EW-40,Temporary Site Access Locations,Open,2025-11-18,OTHER,,,,P6 CE-036,P6 CE-036:P6 CE record,Covered by CE
-EW-39,Mains power supply,Open,2025-11-18,SSEN,,,,,,Gap - no PMI/CE (opportunity)
-EW-38,Culvert 24 stream realignment,Open,2025-11-17,TOPO,,,,,,Gap - no PMI/CE (opportunity)
-EW-37,S900 - Advance BT Works /Works By Others for BT Advance Works,Closed,2025-11-13,BT,PMI-18,PMI-18,PMI-18:explicit,CE-13,CE-13:via PMI-18,Covered by CE
-EW-36,S245 East Dowally Cottage Delay - Jan 2026,Closed,2025-11-05,OTHER,,,,,,Closed - no CE
-EW-35,Timing of TM Plan Submissions,Closed,2025-11-03,OTHER,,,,,,Closed - no CE
-EW-34,Survey of Existing Vegetation Report,Closed,2025-10-31,OTHER,,,,,,Closed - no CE
-EW-33,Network Rail - Site Boundaries,Closed,2025-10-31,GUAY,,,,,,Closed - no CE
-EW-32,Tree Felling - [person] CPO land,Closed,2025-10-31,OTHER,,,,,,Closed - no CE
-EW-31,Noise and Vibration Survey Delay - Haugh of Kilmorich (No Access),Closed,2025-10-30,OTHER,,,,,,Closed - no CE
-EW-30,S245 East Dowally Farmhouse Delay - Jan 2026,Closed,2025-10-30,OTHER,,,,,,Closed - no CE
-EW-29,Culvert 18 Survey Information,Closed,2025-10-20,OTHER,,,,,,Closed - no CE
-EW-28,Disturbance of INNS,Open,2025-10-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-27,Contract for Alterations to Guay Farmhouse,Closed,2025-10-14,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,Covered by CE
-EW-26,BT Temporary Diversion clash with permanent Works,Closed,2025-10-10,BT,,,,,,Closed - no CE
-EW-25,Invasive Species Himalayan balsam,Closed,2025-10-03,OTHER,,,,,,Closed - no CE
-EW-24,Guay Farmhouse Access,Closed,2025-10-02,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,Covered by CE
-EW-23,Network Rail - QTS - Directional Drilling Programme,Closed,2025-10-02,OTHER,,,,,,Closed - no CE
-EW-22,Water Quality Monitoring Equipment,Closed,2025-10-01,OTHER,,,,P6 CE-011,P6 CE-011:P6 CE record,Covered by CE
-EW-21,Section 61 Consent,Closed,2025-09-26,OTHER,,,,,,Closed - no CE
-EW-20,Vehicles for the Client's Team,Closed,2025-09-25,OTHER,,PMI-5;PMI-20;PMI-42,PMI-5:title match 100%;PMI-20:title match 60%;PMI-42:title match 50%,CE-5;CE-14;CE-29;P6 CE-005,CE-5:via PMI-5;CE-14:via PMI-20;CE-29:via PMI-42;P6 CE-005:P6 CE record,Covered by CE
-EW-19,Undertrack crossings below the Highland Main Line Railway,Open,2025-09-24,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-18,BT Openreach Junction Boxes,Open,2025-09-16,BT,,,,,,Gap - no PMI/CE (opportunity)
-EW-17,BT Openreach Delays,Closed,2025-09-16,BT,,,,,,Closed - no CE
-EW-16,BT Openreach Trenching,Agreed to close,2025-09-16,BT,,,,,,Closed - no CE
-EW-15,Waste Exemption Process Legal Change (EASR),Closed,2025-09-12,OTHER,CE-3,,,CE-3;P6 CE-003,CE-3:EW notes;P6 CE-003:P6 CE record,Covered by CE
-EW-14,Scottish Water Main Temporary Diversion,Open,2025-09-12,SW,,,,,,Gap - no PMI/CE (opportunity)
-EW-13,Species Specific Mitigation Measures,Closed,2025-09-11,OTHER,,,,,,Closed - no CE
-EW-12,Traffic Management by Others,Closed,2025-09-10,ITS,,PMI-60,PMI-60:title match 40%,,,PMI issued - check CE
-EW-11,Incorrect Contact Information,Closed,2025-09-09,OTHER,,,,P6 CE-004,P6 CE-004:P6 CE record,Covered by CE
-EW-10,CL15.2 - Early Warning Meeting 1,Closed,2025-09-09,OTHER,,,,,,Closed - no CE
-EW-9,Enchanted Forest Event,Closed,2025-09-05,OTHER,,,,,,Closed - no CE
-EW-8,[private individual] Septic Tank,Closed,2025-08-20,OTHER,PMI-35,PMI-35,PMI-35:explicit,CE-22;P6 CE-001,CE-22:via PMI-35;P6 CE-001:P6 CE record,Covered by CE
-EW-7,Delays due to interfaces with farming operations/ businesses,Open,2025-08-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-6,Delays due to constraints,Open,2025-08-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-5,Delays due to physical conditions,Open,2025-08-20,OTHER,,,,CE-34,CE-34:CEMAR CE title match,Covered by CE
-EW-4,Delays to Design /Design Check,Open,2025-08-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-3,Delays in securing consents /approvals,Open,2025-08-20,OTHER,,,,,,Gap - no PMI/CE (opportunity)
-EW-2,Delay to site power supply,Open,2025-08-20,SSEN,,,,,,Gap - no PMI/CE (opportunity)
-EW-1,Delays caused by Others,Open,2025-08-20,OTHER,,PMI-18,PMI-18:title match 50%,CE-13;P6 CE-013,CE-13:via PMI-18;P6 CE-013:P6 CE record,Covered by CE
+ew_id,title,status,notified,package_id,absorbed_by,pmis,pmi_link,ces,ce_link,ce_status,coverage
+EW-222,Openreach Delays - Soil Nailing,Open,2026-09-30,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-221,Outstanding Baseline Data for Groundwater and Private Water Supplies,Open,2026-09-30,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-220,In situ WQM equipment (Ongoing Equipment Issues),Open,2026-09-30,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-219,Handover for PWS monitoring,Open,2026-09-30,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-218,ITS Methodology Change,Open,2026-09-30,ITS,,,,,,,Gap - no PMI/CE (opportunity)
+EW-217,Openreach delays - Mainline Drainage,Open,2026-09-30,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-216,Land Access Restrictions for PWS (and other) monitoring / surveys,Open,2026-09-30,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-215,Banaghers HSE Incident,Open,2026-09-30,GUAY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-214,NatureScot Bat licences,Open,2026-09-30,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-213,Rainfall w/c 28/09/26,Open,2026-09-29,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-212,Culvert WF47 and WF49 Topographical issues,Open,2026-09-29,TOPO,,,,,,,Gap - no PMI/CE (opportunity)
+EW-211,Road Traffic Incident Dunkeld 28/09/2026,Open,2026-09-29,OTHER,,,,CE-CNTFD-83;CE-CNTFD-84,CE-CNTFD-83:CEMAR CE title match;CE-CNTFD-84:CEMAR CE title match,CE-CNTFD-83:NOT ACCEPTED;CE-CNTFD-84:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-210,Boundaries of the Site - Land Made Available,Open,2026-09-28,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-209,Environmental and Ecological Compliance by Others - Temporary Beaver Fencing,Open,2026-09-24,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-208,Hydrophobic Pore Liner,Open,2026-09-24,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-207,Landscape Clerk of Works Attendance,Open,2026-09-24,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-206,Hydrophobic Pore Liner Application Requirements for Culverts - Cl.12.14.9 of S 320,Open,2026-09-24,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-205,Loss of Water Pressure,Open,2026-09-24,SW,,,,,,,Gap - no PMI/CE (opportunity)
+EW-204,Guay Farmhouse - Mill Lade Realignment - Winter Working,Open,2026-09-15,GUAY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-203,New Retaining Wall at Ch5900,Open,2026-09-11,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-202,Dowally to Kindallachan Bus Stop Location - Reference Point BS04/N42,Open,2026-09-11,OTHER,,PMI-107,PMI-107:explicit,CE-94,CE-94:via PMI-107,CE-94:AWAITING QUOTATION,Covered by CE
+EW-201,Reference Point A60 Incorrect Location,Open,2026-09-11,OTHER,,PMI-107,PMI-107:explicit,CE-94,CE-94:via PMI-107,CE-94:AWAITING QUOTATION,Covered by CE
+EW-200,Impact of Earthworks on overland route between Rotmell Road and URX02 at Ch2950m,Open,2026-09-09,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-199,Road Traffic Incident 07/09/2026,Closed,2026-09-07,OTHER,,,,CE-CNTFD-18;CE-CNTFD-83;CE-CNTFD-84,CE-CNTFD-18:CEMAR CE title match;CE-CNTFD-83:CEMAR CE title match;CE-CNTFD-84:CEMAR CE title match,CE-CNTFD-18:NOT ACCEPTED;CE-CNTFD-83:NOT ACCEPTED;CE-CNTFD-84:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-198,Culvert Waterproofing - Scope & DMRB Interpretation,Open,2026-09-07,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-197,Kindallachan Works Interference,Closed,2026-09-01,OTHER,,,,,,,Closed - no CE
+EW-196,Kindallachan Works Incident 23.08.2026,Closed,2026-08-27,OTHER,EW-197,,,CE-CNTFD-18;P6 CE-018,CE-CNTFD-18:CEMAR CE title match;P6 CE-018:P6 CE record,CE-CNTFD-18:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-195,Potential delay to completion of Guay Farmhouse section 1 works,Open,2026-08-27,GUAY,,,,CE-6;CE-65,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match,CE-6:IMPLEMENTED;CE-65:AWAITING QUOTATION,Covered by CE
+EW-194,Seed Mix Availability,Open,2026-08-26,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-193,Section 1N Boundaries of Site,Open,2026-08-26,ITS,,,,,,,Gap - no PMI/CE (opportunity)
+EW-192,URX Delays - Earthworks impact,Open,2026-08-25,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-191,Potential Additional Traffic Signs,Open,2026-08-24,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-190,Road Traffic Collision,Closed,2026-08-17,OTHER,,,,CE-CNTFD-82;CE-CNTFD-83;CE-CNTFD-84,CE-CNTFD-82:CEMAR CE title match;CE-CNTFD-83:CEMAR CE title match;CE-CNTFD-84:CEMAR CE title match,CE-CNTFD-82:NOT ACCEPTED;CE-CNTFD-83:NOT ACCEPTED;CE-CNTFD-84:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-189,Rotmell Access Boulder Content,Open,2026-08-17,OTHER,,,,CE-CNTFD-95,CE-CNTFD-95:CEMAR CE title match,CE-CNTFD-95:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-188,BTOR Change Over Fibre Cables,Open,2026-08-14,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-187,Gate at Kindallachan Pond Complex,Closed,2026-08-13,BT,,,,,,,Closed - no CE
+EW-186,Guay Farmhouse Programme Impact,Open,2026-08-06,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,CE-6:IMPLEMENTED;CE-65:AWAITING QUOTATION,Covered by CE
+EW-185,Delays at Dowally North due to PKC Planning Department,Closed,2026-08-06,OTHER,,,,,,,Closed - no CE
+EW-184,Scope Interpretation,Open,2026-08-05,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-183,Dowally Bridge,Open,2026-08-03,OTHER,,,,CE-80,CE-80:CEMAR CE title match,CE-80:AWAITING QUOTATION,Covered by CE
+EW-182,Potential Coal Tar Dowally Bridge,Open,2026-07-31,OTHER,,,,CE-CNTFD-98,CE-CNTFD-98:CEMAR CE title match,CE-CNTFD-98:AWAITING REPLY,Covered by CE
+EW-181,Windthrow Outside Boundaries of the Site,Open,2026-07-31,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-180,Kindallachan Test Pile Failure - Alternative Options,Open,2026-07-29,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-179,CEDP-027 - Period of Reply,Closed,2026-07-28,OTHER,,,,,,,Closed - no CE
+EW-178,Road Traffic Collision,Closed,2026-07-27,OTHER,,,,CE-CNTFD-82;CE-CNTFD-83;CE-CNTFD-84,CE-CNTFD-82:CEMAR CE title match;CE-CNTFD-83:CEMAR CE title match;CE-CNTFD-84:CEMAR CE title match,CE-CNTFD-82:NOT ACCEPTED;CE-CNTFD-83:NOT ACCEPTED;CE-CNTFD-84:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-177,Japanese Knotweed  CH1700SB,Open,2026-07-27,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-176,QTS TM Cancellation,Closed,2026-07-17,BT,,,,,,,Closed - no CE
+EW-175,Boulder obstructions Rotmell,Closed,2026-07-14,OTHER,EW-189,,,CE-CNTFD-95,CE-CNTFD-95:CEMAR CE title match,CE-CNTFD-95:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-174,Non-Structural Culvert Headwalls,Open,2026-07-14,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-173,Kindallachan Test Pile Failure,Closed,2026-07-13,OTHER,EW-180,,,,,,Absorbed (EW-180)
+EW-172,Delayed revision of works by Others assumptions affecting programme accuracy and impact assessment,Open,2026-07-13,GUAY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-171,1 Dowally Cottages CPO / Boundaries of the Site,Open,2026-07-09,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-170,Kindallachan Outfall,Closed,2026-07-08,OTHER,,,,CE-CNTFD-66;CE-CNTFD-74;CE-79,CE-CNTFD-66:CEMAR CE title match;CE-CNTFD-74:CEMAR CE title match;CE-79:CEMAR CE title match,CE-CNTFD-66:NOT ACCEPTED;CE-CNTFD-74:NOT ACCEPTED;CE-79:QUOTED,Covered by CE
+EW-169,Reference Point A45 Re-design,Open,2026-07-03,OTHER,,PMI-55,PMI-55:explicit,CE-46,CE-46:via PMI-55,CE-46:AWAITING ASSESSMENT,Covered by CE
+EW-168,UK Steel Trade Measure,Closed,2026-06-30,OTHER,,,,CE-CNTFD-63,CE-CNTFD-63:CEMAR CE title match,CE-CNTFD-63:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-167,Noise and Vibration Cumulative Impact,Closed,2026-06-25,OTHER,,,,,,,Closed - no CE
+EW-166,Delayed revision of works by Others assumptions affecting programme accuracy & impact assessment,Closed,2026-06-23,OTHER,EW-172,,,,,,Absorbed (EW-172)
+EW-165,Conditional Consultee Approval Response,Closed,2026-06-19,OTHER,,,,,,,Closed - no CE
+EW-164,DS-168/169 Rejection,Closed,2026-06-19,OTHER,,,,,,,Closed - no CE
+EW-163,Heavy Rainfall w/c 15/06/2026,Closed,2026-06-19,OTHER,,,,,,,Closed - no CE
+EW-162,DS-165/152/151 Rejection,Open,2026-06-19,OTHER,,,,CE-CNTFD-58;CE-CNTFD-59,CE-CNTFD-58:CEMAR CE title match;CE-CNTFD-59:CEMAR CE title match,CE-CNTFD-58:NOT ACCEPTED;CE-CNTFD-59:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-161,Concrete Obstructions CH-800,Closed,2026-06-19,OTHER,EW-175,,,CE-43;CE-53,CE-43:CEMAR CE title match;CE-53:CEMAR CE title match,CE-43:IMPLEMENTED;CE-53:IMPLEMENTED,Covered by CE
+EW-160,QTS UTX As-Builts,Closed,2026-06-19,OTHER,,,,,,,Closed - no CE
+EW-159,Mill Lade Listed Building Consent,Open,2026-06-19,GUAY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-158,Sheet Piling Culvert 18/A9 & 19/A9 - Ground Conditions,Open,2026-06-18,OTHER,,,,CE-CNTFD-61,CE-CNTFD-61:CEMAR CE title match,CE-CNTFD-61:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-157,Existing White Lining,Agreed to close,2026-06-17,OTHER,,,,,,,Closed - no CE
+EW-156,NatureScot Bat licences_bat buildings and structures,Open,2026-06-12,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-155,Culvert 18 Cascade Trial Panel,Open,2026-06-12,OTHER,,PMI-52,PMI-52:explicit,CE-40,CE-40:via PMI-52,CE-40:IMPLEMENTED,Covered by CE
+EW-154,DS-141 S21 Comment Responses - Surcharge loading,Open,2026-06-09,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-153,Quality and Timing of S 4000 Communications Materials,Open,2026-06-05,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-152,Pile Testing Requirements,Open,2026-06-01,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-151,Scottish Water leak CH4450 (Approx),Closed,2026-05-29,SW,,,,,,,Closed - no CE
+EW-150,Potential for additional Beaver Constraints,Open,2026-05-29,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-149,Vehicle Fire on A9 South of Dunkeld,Closed,2026-05-27,OTHER,,,,,,,Closed - no CE
+EW-148,Works Progressing Without an Accepted Design,Open,2026-05-21,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-147,Hydrophobic pore liner S 320 Cl 12.14.9,Open,2026-05-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-146,Ledpettie Bridge LB5574 Condition,Open,2026-05-20,LEDP,,,,CE-CNTFD-55,CE-CNTFD-55:CEMAR CE title match,CE-CNTFD-55:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-145,Turning Head T04,Open,2026-05-20,TOPO,,,,,,,Gap - no PMI/CE (opportunity)
+EW-144,ITS CCTV Visibility from ITS Site 1,Open,2026-05-20,ITS,,,,,,,Gap - no PMI/CE (opportunity)
+EW-143,P03/S13 Structure within Scheduled Monument Area,Open,2026-05-20,ITS,,,,,,,Gap - no PMI/CE (opportunity)
+EW-142,Dry Mammal Underpass at Chainage 7800 Ground Level Discrepancy,Open,2026-05-20,TOPO,,,,,,,Gap - no PMI/CE (opportunity)
+EW-141,DMU Feasibility Issue at Ch. 3550,Open,2026-05-20,TOPO,,,,,,,Gap - no PMI/CE (opportunity)
+EW-140,Culvert 39 Downstream GI Access,Open,2026-05-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-139,Beaver Translocation and stakeholder engagement,Open,2026-05-20,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-138,East Dowally - Existing Road Noise Levels,Open,2026-05-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-137,Design of the Ecology / Flood Compensatory Flood Storage Pond at chainage 6500,Open,2026-05-20,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-136,SEPA Water Run-off Permits,Open,2026-05-20,OTHER,,,,CE-CNTFD-15,CE-CNTFD-15:CEMAR CE title match,CE-CNTFD-15:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-135,Safety Barrier at S05 on Dunkeld to Rotmell Road,Open,2026-05-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-134,Woodland Lodge Satellite Dish,Open,2026-05-19,OTHER,,,,CE-CNTFD-50,CE-CNTFD-50:CEMAR CE title match,CE-CNTFD-50:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-133,Invasives - Bluebell Presence,Open,2026-05-19,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-132,Guay Farmhouse - Maternity Bat Roost and Nesting Swallows,Open,2026-05-19,GUAY,,PMI-111,PMI-111:explicit,CE-65,CE-65:via PMI-111,CE-65:AWAITING QUOTATION,Covered by CE
+EW-131,Existing White Lining,Open,2026-05-19,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-130,TM Maintenance /Supervision,Open,2026-05-18,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-129,Scottish Water Strike,Closed,2026-05-15,SW,,,,CE-24,CE-24:CEMAR CE title match,CE-24:AWAITING QUOTATION,Covered by CE
+EW-128,Openreach Trenching,Open,2026-05-15,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-127,Openreach TM Requirements,Closed,2026-05-15,BT,,,,,,,Closed - no CE
+EW-126,Right hand turns construction traffic,Open,2026-05-15,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-125,Noise Complaint Unplanned and Unnotified works at Kindallachan on Saturday 9th May 2026,Open,2026-05-12,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-124,1 Dowally Cottages CPO / Boundaries of the Site,Open,2026-05-08,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-123,Ecological and Environmental Compliance By Others,Open,2026-05-08,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-122,Design submission not returned within period for reply,Open,2026-05-08,GUAY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-121,Non-Structural Culvert Headwalls - SDS,Open,2026-05-07,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-120,DS-87 Rejection,Open,2026-04-28,OTHER,,,,CE-44;CE-CNTFD-52;CE-CNTFD-58;CE-CNTFD-59,CE-44:CEMAR CE title match;CE-CNTFD-52:CEMAR CE title match;CE-CNTFD-58:CEMAR CE title match;CE-CNTFD-59:CEMAR CE title match,CE-44:AWAITING QUOTATION;CE-CNTFD-52:NOT ACCEPTED;CE-CNTFD-58:NOT ACCEPTED;CE-CNTFD-59:NOT ACCEPTED,Covered by CE
+EW-119,Concrete Obstructions - Guay NB CH4645,Open,2026-04-28,GUAY,,,,CE-43;CE-53,CE-43:CEMAR CE title match;CE-53:CEMAR CE title match,CE-43:IMPLEMENTED;CE-53:IMPLEMENTED,Covered by CE
+EW-118,Culvert 16 LMA,Open,2026-04-22,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-117,BT Cable Pulled during De-Stumping Works,Closed,2026-04-22,BT,,,,,,,Closed - no CE
+EW-116,Network Rail/QTS UTX Works sinkhole at UTX3,Open,2026-04-21,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-115,Potential HDD Delays - SSEN,Open,2026-04-17,SSEN,,,,,,,Gap - no PMI/CE (opportunity)
+EW-114,Reference Points A38,Open,2026-04-17,OTHER,,PMI-67,PMI-67:explicit,CE-51,CE-51:via PMI-67,CE-51:IMPLEMENTED,Covered by CE
+EW-113,Delay to partial demolition and reconstruction of the walls at Guay Farmhouse,Open,2026-04-15,GUAY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-112,Coal Tar - General Wades Road,Open,2026-04-14,OTHER,,,,CE-CNTFD-47,CE-CNTFD-47:CEMAR CE title match,CE-CNTFD-47:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-111,Septic tank at Kindallachan _Croft Croy Cottages,Closed,2026-03-26,GUAY,EW-170,,,,,,Absorbed (EW-170)
+EW-110,Beaver Meeting_SPP _Landscape_ Design 25.03.2026,Open,2026-03-26,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-109,QTS directional drilling and use of bentonite,Closed,2026-03-26,OTHER,,,,,,,Closed - no CE
+EW-108,Risk to Sectional Completion (1N)  - Boundaries of Site,Open,2026-03-25,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-107,Beaver Translocation CH6000,Open,2026-03-20,BEAVER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-106,CEMAR functionality CL 17.1,Closed,2026-03-19,OTHER,,,,,,,Closed - no CE
+EW-105,Absence of Updated BT Openreach Programme and Risk to Coordination of Works,Agreed to close,2026-03-18,BT,,PMI-18,PMI-18:explicit,CE-13,CE-13:via PMI-18,CE-13:AWAITING ASSESSMENT,Covered by CE
+EW-104,Side Road Drainage,Open,2026-03-17,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-103,Structural Finishes,Closed,2026-03-17,OTHER,PMI-52;PMI-53,PMI-52;PMI-53,PMI-52:explicit;PMI-53:explicit,CE-40,CE-40:via PMI-52,CE-40:IMPLEMENTED,Covered by CE
+EW-102,Potential Asbestos,Open,2026-03-13,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-101,Environmental Monitoring Equipment being interfered with whilst deployed on site,Closed,2026-03-13,OTHER,,,,,,,Closed - no CE
+EW-100,Tree Felling during Bird Nesting Season,Open,2026-03-12,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-99,Additional Tree Felling due to Windthrow Risk,Open,2026-03-12,OTHER,,,,CE-CNTFD-35;P6 CE-035,CE-CNTFD-35:CEMAR CE title match;P6 CE-035:P6 CE record,CE-CNTFD-35:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-98,Scottish Water - Guay Retaining Wall,Open,2026-03-06,SW,,,,CE-CNTFD-32;P6 CE-032,CE-CNTFD-32:CEMAR CE title match;P6 CE-032:P6 CE record,CE-CNTFD-32:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-97,Openreach - Guay Filter Lane,Closed,2026-03-06,BT,EW-105,,,CE-CNTFD-33;P6 CE-033,CE-CNTFD-33:CEMAR CE title match;P6 CE-033:P6 CE record,CE-CNTFD-33:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-96,Potential Asbestos,Open,2026-03-06,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-95,Ledpettie Bridge Condition,Closed,2026-03-05,LEDP,EW-146,,,CE-CNTFD-55,CE-CNTFD-55:CEMAR CE title match,CE-CNTFD-55:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-94,Buzzard Nest CH4800,Open,2026-03-05,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-93,P03/S12 Existing Network Rail Bridge - Scour Assessment,Open,2026-03-03,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-92,Middle East Conflict,Open,2026-03-03,OTHER,,,,CE-CNTFD-39,CE-CNTFD-39:CEMAR CE title match,CE-CNTFD-39:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-91,Unsuitable Existing Control Network,Open,2026-02-27,SURVEY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-90,Newly Identified bat roost Chainage 4810 Southbound,Open,2026-02-27,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-89,S320 Clause 12.9.19 - Retaining Wall Finishes,Closed,2026-02-25,OTHER,,,,,,,Closed - no CE
+EW-88,QTS Fencing Works,Closed,2026-02-24,BT,,,,,,,Closed - no CE
+EW-87,Land Slide at Rotmell Road/A9,Closed,2026-02-24,OTHER,,,,,,,Closed - no CE
+EW-86,[private individual] Septic Tank,Open,2026-02-20,SSEN,,PMI-35,PMI-35:explicit,CE-22;CE-CNTFD-1;P6 CE-001,CE-22:via PMI-35;CE-CNTFD-1:CEMAR CE title match;P6 CE-001:P6 CE record,CE-22:IMPLEMENTED;CE-CNTFD-1:NOT ACCEPTED,Covered by CE
+EW-85,Diesel Spill River Tay - Killin,Closed,2026-02-20,OTHER,,,,,,,Closed - no CE
+EW-84,SEPA Registration off-site disposal,Closed,2026-02-19,OTHER,,,,,,,Closed - no CE
+EW-83,Side Road Drainage - Oversized Pipework,Closed,2026-02-19,OTHER,,,,,,,Closed - no CE
+EW-82,Tree Felling Stand Down near Haugh of Kilmorlich,Closed,2026-02-18,OTHER,EW-86,,,CE-27;P6 CE-027,CE-27:CEMAR CE title match;P6 CE-027:P6 CE record,CE-27:IMPLEMENTED,Covered by CE
+EW-81,VMS Details,Open,2026-02-12,ITS,,,,CE-CNTFD-28;P6 CE-028,CE-CNTFD-28:CEMAR CE title match;P6 CE-028:P6 CE record,CE-CNTFD-28:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-80,QTS Delays,Closed,2026-02-12,BT,,,,,,,Closed - no CE
+EW-79,Culvert 25 Levels,Open,2026-02-11,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-78,Badger Set Ch.850,Open,2026-02-10,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-77,Design Certificates not returned,Closed,2026-02-03,OTHER,,,,,,,Closed - no CE
+EW-76,Incorrect Topographical Information,Open,2026-02-03,TOPO,,,,CE-CNTFD-4;CE-CNTFD-8;P6 CE-004,CE-CNTFD-4:CEMAR CE title match;CE-CNTFD-8:CEMAR CE title match;P6 CE-004:P6 CE record,CE-CNTFD-4:NOT ACCEPTED;CE-CNTFD-8:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-75,Survey Control Points,Open,2026-02-02,SURVEY,,,,,,,Gap - no PMI/CE (opportunity)
+EW-74,Culvert 24 Design Flood Compliance,Closed,2026-02-02,OTHER,,,,,,,Closed - no CE
+EW-73,SW Main Clash with Tree Felling Ch7500-7800,Open,,SW,,,,,,,Gap - no PMI/CE (opportunity)
+EW-72,S320 - Streetlighting Power supply -  TQ71 Response,Open,2026-02-01,SSEN,,,,CE-CNTFD-31;P6 CE-031,CE-CNTFD-31:CEMAR CE title match;P6 CE-031:P6 CE record,CE-CNTFD-31:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-71,Concrete Specification Clarification,Closed,2026-01-28,OTHER,PMI-39,PMI-39,PMI-39:explicit,CE-26,CE-26:via PMI-39,CE-26:IMPLEMENTED,Covered by CE
+EW-70,Existing Drainage Network - Disruption to Works,Open,2026-01-28,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-69,C502 Rotmell Tree Felling,Closed,2026-01-28,OTHER,,,,,,,Closed - no CE
+EW-68,Culvert 35 Diameter,Open,2026-01-27,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-67,Guay Farmhouse Watercourse,Closed,2026-01-23,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,CE-6:IMPLEMENTED;CE-65:AWAITING QUOTATION,Covered by CE
+EW-66,Weather Delays,Closed,2026-01-22,OTHER,,,,CE-19;CE-48;CE-70;CE-93;P6 CE-019,CE-19:CEMAR CE title match;CE-48:CEMAR CE title match;CE-70:CEMAR CE title match;CE-93:CEMAR CE title match;P6 CE-019:P6 CE record,CE-19:IMPLEMENTED;CE-48:AWAITING ASSESSMENT;CE-70:AWAITING ASSESSMENT;CE-93:AWAITING QUOTATION,Covered by CE
+EW-65,Demolition of Guay Cattle Shed,Closed,2026-01-22,GUAY,,PMI-18;PMI-30,PMI-18:explicit;PMI-30:title match 100%,CE-13,CE-13:EW notes,CE-13:AWAITING ASSESSMENT,Covered by CE
+EW-64,Quality and Timing of S 4000 Communication Materials,Closed,2026-01-21,OTHER,,,,,,,Closed - no CE
+EW-63,Increased Site Clearance,Open,2026-01-14,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-62,Water Quality Monitoring Equipment Installation,Open,2026-01-12,OTHER,,,,CE-CNTFD-11;CE-CNTFD-85;P6 CE-011,CE-CNTFD-11:CEMAR CE title match;CE-CNTFD-85:CEMAR CE title match;P6 CE-011:P6 CE record,CE-CNTFD-11:NOT ACCEPTED;CE-CNTFD-85:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-61,Dalmarnock Fishings Access,Closed,2026-01-08,OTHER,,,,,,,Closed - no CE
+EW-60,Network Rail Possession,Closed,2026-01-08,OTHER,,,,,,,Closed - no CE
+EW-59,06/01/2026 Weather,Closed,2026-01-08,OTHER,,,,,,,Closed - no CE
+EW-58,Weather Delay - Main Compound,Closed,2026-01-05,OTHER,,,,,,,Closed - no CE
+EW-57,PS03-SSEN-0304 (Dowally),Open,2026-01-05,SSEN,,,,CE-30;P6 CE-030,CE-30:CEMAR CE title match;P6 CE-030:P6 CE record,CE-30:IMPLEMENTED,Covered by CE
+EW-56,Scottish Water - Asset not located,Open,2025-12-19,SW,,,,,,,Gap - no PMI/CE (opportunity)
+EW-55,TQ 71 - Period of Response (13.3),Closed,2025-12-18,OTHER,,,,,,,Closed - no CE
+EW-54,Scottish Water Trial Excavations,Open,2025-12-16,SW,,,,CE-24;P6 CE-024,CE-24:CEMAR CE title match;P6 CE-024:P6 CE record,CE-24:AWAITING QUOTATION,Covered by CE
+EW-53,Openreach - General Wades Road,Closed,2025-12-12,BT,,,,CE-CNTFD-47,CE-CNTFD-47:CEMAR CE title match,CE-CNTFD-47:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-52,Traffic Scotland Contact,Closed,2025-12-12,ITS,,,,,,,Closed - no CE
+EW-51,GC473 - Period of Response (CEDP-004),Closed,2025-12-11,OTHER,,,,,,,Closed - no CE
+EW-50,Site Access Construction/ Tree Felling - Delay Risk,Open,2025-12-11,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-49,Appendix 1/17 1.1.8 - PKC TM Consultation,Open,2025-12-11,OTHER,,,,CE-CNTFD-16;P6 CE-016,CE-CNTFD-16:CEMAR CE title match;P6 CE-016:P6 CE record,CE-CNTFD-16:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-48,Openreach - Circet RAMS/ Availability,Closed,2025-12-11,BT,,,,,,,Closed - no CE
+EW-47,River Tay Flood warnings,Closed,2025-12-10,OTHER,,,,,,,Closed - no CE
+EW-46,Storm Bram Yellow Warnings 09 &10/12/25,Closed,2025-12-09,OTHER,,,,,,,Closed - no CE
+EW-45,QTS Surface Water Run-off,Closed,2025-12-05,OTHER,,,,CE-CNTFD-15;P6 CE-015,CE-CNTFD-15:CEMAR CE title match;P6 CE-015:P6 CE record,CE-CNTFD-15:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-44,QTS RAMS,Closed,2025-12-02,OTHER,,,,,,,Closed - no CE
+EW-43,Quality of Submissions,Open,2025-11-25,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-42,Site Safety - Induction of Others,Closed,2025-11-25,OTHER,,,,,,,Closed - no CE
+EW-41,Site Safety - Induction of Others,Closed,2025-11-21,OTHER,,,,,,,Closed - no CE
+EW-40,Temporary Site Access Locations,Open,2025-11-18,OTHER,,,,CE-CNTFD-36;P6 CE-036,CE-CNTFD-36:CEMAR CE title match;P6 CE-036:P6 CE record,CE-CNTFD-36:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-39,Mains power supply,Open,2025-11-18,SSEN,,,,CE-CNTFD-71,CE-CNTFD-71:CEMAR CE title match,CE-CNTFD-71:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-38,Culvert 24 stream realignment,Open,2025-11-17,TOPO,,,,,,,Gap - no PMI/CE (opportunity)
+EW-37,S900 - Advance BT Works /Works By Others for BT Advance Works,Closed,2025-11-13,BT,PMI-18,PMI-18,PMI-18:explicit,CE-13,CE-13:via PMI-18,CE-13:AWAITING ASSESSMENT,Covered by CE
+EW-36,S245 East Dowally Cottage Delay - Jan 2026,Closed,2025-11-05,OTHER,,,,,,,Closed - no CE
+EW-35,Timing of TM Plan Submissions,Closed,2025-11-03,OTHER,,,,,,,Closed - no CE
+EW-34,Survey of Existing Vegetation Report,Closed,2025-10-31,OTHER,,,,,,,Closed - no CE
+EW-33,Network Rail - Site Boundaries,Closed,2025-10-31,GUAY,,,,,,,Closed - no CE
+EW-32,Tree Felling - [person] CPO land,Closed,2025-10-31,OTHER,,,,,,,Closed - no CE
+EW-31,Noise and Vibration Survey Delay - Haugh of Kilmorich (No Access),Closed,2025-10-30,OTHER,,,,,,,Closed - no CE
+EW-30,S245 East Dowally Farmhouse Delay - Jan 2026,Closed,2025-10-30,OTHER,,,,,,,Closed - no CE
+EW-29,Culvert 18 Survey Information,Closed,2025-10-20,OTHER,,,,,,,Closed - no CE
+EW-28,Disturbance of INNS,Open,2025-10-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-27,Contract for Alterations to Guay Farmhouse,Closed,2025-10-14,GUAY,,,,CE-6;CE-65;CE-99;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;CE-99:CEMAR CE title match;P6 CE-006:P6 CE record,CE-6:IMPLEMENTED;CE-65:AWAITING QUOTATION;CE-99:AWAITING QUOTATION,Covered by CE
+EW-26,BT Temporary Diversion clash with permanent Works,Closed,2025-10-10,BT,,,,,,,Closed - no CE
+EW-25,Invasive Species Himalayan balsam,Closed,2025-10-03,OTHER,,,,,,,Closed - no CE
+EW-24,Guay Farmhouse Access,Closed,2025-10-02,GUAY,,,,CE-6;CE-65;P6 CE-006,CE-6:CEMAR CE title match;CE-65:CEMAR CE title match;P6 CE-006:P6 CE record,CE-6:IMPLEMENTED;CE-65:AWAITING QUOTATION,Covered by CE
+EW-23,Network Rail - QTS - Directional Drilling Programme,Closed,2025-10-02,OTHER,,,,,,,Closed - no CE
+EW-22,Water Quality Monitoring Equipment,Closed,2025-10-01,OTHER,,,,CE-CNTFD-11;CE-CNTFD-85;P6 CE-011,CE-CNTFD-11:CEMAR CE title match;CE-CNTFD-85:CEMAR CE title match;P6 CE-011:P6 CE record,CE-CNTFD-11:NOT ACCEPTED;CE-CNTFD-85:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-21,Section 61 Consent,Closed,2025-09-26,OTHER,,,,,,,Closed - no CE
+EW-20,Vehicles for the Client's Team,Closed,2025-09-25,OTHER,,PMI-5;PMI-20;PMI-42,PMI-5:title match 100%;PMI-20:title match 60%;PMI-42:title match 50%,CE-5;CE-14;CE-29;CE-CNTFD-2;P6 CE-005,CE-5:via PMI-5;CE-14:via PMI-20;CE-29:via PMI-42;CE-CNTFD-2:CEMAR CE title match;P6 CE-005:P6 CE record,CE-5:IMPLEMENTED;CE-14:IMPLEMENTED;CE-29:IMPLEMENTED;CE-CNTFD-2:NOT ACCEPTED,Covered by CE
+EW-19,Undertrack crossings below the Highland Main Line Railway,Open,2025-09-24,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-18,BT Openreach Junction Boxes,Open,2025-09-16,BT,,,,,,,Gap - no PMI/CE (opportunity)
+EW-17,BT Openreach Delays,Closed,2025-09-16,BT,,,,,,,Closed - no CE
+EW-16,BT Openreach Trenching,Agreed to close,2025-09-16,BT,,,,,,,Closed - no CE
+EW-15,Waste Exemption Process Legal Change (EASR),Closed,2025-09-12,OTHER,CE-3,,,CE-CNTFD-3;P6 CE-003,CE-CNTFD-3:EW notes;P6 CE-003:P6 CE record,CE-CNTFD-3:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-14,Scottish Water Main Temporary Diversion,Open,2025-09-12,SW,,,,,,,Gap - no PMI/CE (opportunity)
+EW-13,Species Specific Mitigation Measures,Closed,2025-09-11,OTHER,,,,,,,Closed - no CE
+EW-12,Traffic Management by Others,Closed,2025-09-10,ITS,,PMI-60,PMI-60:title match 40%,,,,PMI issued - check CE
+EW-11,Incorrect Contact Information,Closed,2025-09-09,OTHER,,,,CE-CNTFD-4;CE-CNTFD-8;P6 CE-004,CE-CNTFD-4:CEMAR CE title match;CE-CNTFD-8:CEMAR CE title match;P6 CE-004:P6 CE record,CE-CNTFD-4:NOT ACCEPTED;CE-CNTFD-8:NOT ACCEPTED,CE notified - NOT ACCEPTED
+EW-10,CL15.2 - Early Warning Meeting 1,Closed,2025-09-09,OTHER,,,,,,,Closed - no CE
+EW-9,Enchanted Forest Event,Closed,2025-09-05,OTHER,,,,,,,Closed - no CE
+EW-8,[private individual] Septic Tank,Closed,2025-08-20,OTHER,PMI-35,PMI-35,PMI-35:explicit,CE-22;CE-CNTFD-1;P6 CE-001,CE-22:via PMI-35;CE-CNTFD-1:CEMAR CE title match;P6 CE-001:P6 CE record,CE-22:IMPLEMENTED;CE-CNTFD-1:NOT ACCEPTED,Covered by CE
+EW-7,Delays due to interfaces with farming operations/ businesses,Open,2025-08-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-6,Delays due to constraints,Open,2025-08-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-5,Delays due to physical conditions,Open,2025-08-20,OTHER,,,,CE-34,CE-34:CEMAR CE title match,CE-34:IMPLEMENTED,Covered by CE
+EW-4,Delays to Design /Design Check,Open,2025-08-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-3,Delays in securing consents /approvals,Open,2025-08-20,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-2,Delay to site power supply,Open,2025-08-20,SSEN,,,,,,,Gap - no PMI/CE (opportunity)
+EW-1,Delays caused by Others,Open,2025-08-20,OTHER,,PMI-18,PMI-18:title match 50%,CE-13;P6 CE-013,CE-13:via PMI-18;P6 CE-013:P6 CE record,CE-13:AWAITING ASSESSMENT,Covered by CE
+EW-232,Location of Existing C16,Open,2026-10-13,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-233,Application of hydrophobic pore liner in concrete culverts,Open,2026-10-14,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
+EW-234,Rainfall w/c 12/10/2026,Open,2026-10-15,OTHER,,,,,,,Gap - no PMI/CE (opportunity)
