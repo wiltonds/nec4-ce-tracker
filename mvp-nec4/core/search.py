@@ -30,6 +30,9 @@ SYNONYMS = {
 STOP = set("o a os as de da do das dos e em no na nos nas que com por para um uma sobre desde ate até "
            "the of and to in on for with from by is are was were be this that it at as an or what whats "
            "aconteceu acontecendo houve problema problemas qual quais como quando onde".split())
+SIM_STOP = set("change scope instruct instruction instructs accordance clause conditions contract following updated "
+               "update quotation quotations submit pm project manager contractor delete replace insert appendix part "
+               "drawings drawing 320 350 2805 900 905 100 4000 volume early warning notified status".split())
 MONTHS = {"janeiro": 1, "fevereiro": 2, "marco": 3, "março": 3, "abril": 4, "maio": 5, "junho": 6, "julho": 7,
           "agosto": 8, "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12, "january": 1,
           "february": 2, "march": 3, "april": 4, "may": 5, "june": 6, "july": 7, "august": 8,
@@ -76,7 +79,7 @@ def build_corpus(tracker: pd.DataFrame, pmi: pd.DataFrame, ewr: pd.DataFrame, ce
             late = f" Replied {int(dl)} days late." if pd.notna(dl) and dl > 0 else ""
             rows.append({"date": r.notified, "source": "TQ register", "ref": r.tq, "label": r.tq, "kind": "Technical query",
                          "topic_id": "", "topic": r.title, "package_id": r.package_id, "location": "",
-                         "text": f"{r.title}. {r.question} Reply: {r.reply}.{late} {r.cross_ref}"})
+                         "text": f"{r.title}. {r.question}" + (f" Reply: {r.reply}." if r.reply else "") + f"{late} {r.cross_ref}".rstrip()})
     if gc is not None and len(gc):
         for r in gc.itertuples():
             rows.append({"date": r.date, "source": "GC letters", "ref": r.gc, "label": r.gc,
@@ -89,6 +92,12 @@ def build_corpus(tracker: pd.DataFrame, pmi: pd.DataFrame, ewr: pd.DataFrame, ce
                      "location": "", "text": f"{r.title}. Quotation instructions: {r.pmis}"})
     c = pd.DataFrame(rows)
     c["date"] = pd.to_datetime(c["date"], errors="coerce")
+    # the same document can come from the tracker and from a register: keep the tracker row (richer summary)
+    in_tracker = set(c.loc[c["source"] == "Tracker", "ref"])
+    status = dict(zip(c.loc[c["source"] == "EW register", "ref"], c.loc[c["source"] == "EW register", "label"]))
+    c = c[~(c["source"].isin(["EW register", "GC letters"]) & c["ref"].isin(in_tracker))].copy()
+    m = (c["source"] == "Tracker") & (c["kind"] == "Early warning raised")
+    c.loc[m, "label"] = c.loc[m, "ref"].map(status).fillna(c.loc[m, "label"])
     c = c.dropna(subset=["date"]).drop_duplicates(["ref", "date", "text"]).reset_index(drop=True)
     c["refs"] = (c["ref"] + " " + c["text"]).map(refs_in)
     return c
@@ -153,8 +162,10 @@ def parse_query(q: str):
     return since, ch
 
 
-def around_document(corpus: pd.DataFrame, ref: str, window_days: int = 365) -> tuple[pd.Series, pd.DataFrame]:
-    """Everything linked to one document: shares a reference, belongs to the same topic, or quotes it."""
+def around_document(corpus: pd.DataFrame, ref: str, window_days: int = 365, index: "Index" = None,
+                    similar: int = 12) -> tuple[pd.Series, pd.DataFrame]:
+    """Everything linked to one document: shares a reference, belongs to the same topic, quotes it, or (with an
+    index) talks about the same thing. Column 'link' says why each record is there."""
     ref = ref.upper().replace(" ", "")
     me = corpus[corpus["ref"].str.upper() == ref].sort_values("date")
     if me.empty:
@@ -162,7 +173,18 @@ def around_document(corpus: pd.DataFrame, ref: str, window_days: int = 365) -> t
     anchor = me.iloc[0]
     links = set().union(*me["refs"]) | {ref}
     topics = set(me["topic_id"]) - {""}
-    rel = corpus[corpus["refs"].map(lambda s: bool(s & links)) | corpus["topic_id"].isin(topics)].copy()
+    by_ref = corpus["refs"].map(lambda s: bool(s & links))
+    by_topic = corpus["topic_id"].isin(topics)
+    rel = corpus[by_ref | by_topic].copy()
+    rel["link"] = by_ref[by_ref | by_topic].map({True: "reference", False: "same topic"})
+    if index is not None and similar:
+        q = f"{anchor.topic} {' '.join(str(anchor.text).split()[:60])}"
+        q = " ".join(w for w in _tok(q) if w not in SIM_STOP)  # drop contract boilerplate
+        m = re.search(r"(?:CH|chainage)\s*:?\s*(\d{3,5})", f"{anchor.location} {q}", re.I)
+        sim = index.search(q, k=similar + 10, ch=int(m.group(1)) if m else None)
+        sim = sim[sim["score"] >= sim["score"].max() * 0.35] if len(sim) else sim
+        sim = sim[~sim.index.isin(rel.index)].head(similar).drop(columns="score").assign(link="similar content")
+        rel = pd.concat([rel, sim])
     rel = rel[(rel["date"] - anchor.date).abs().dt.days <= window_days]
     rel["when"] = rel["date"].map(lambda d: "before" if d < anchor.date else "after" if d > anchor.date else "same day")
     return anchor, rel.sort_values("date")

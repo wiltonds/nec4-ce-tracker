@@ -384,7 +384,7 @@ elif page == "Ask the project":
         refs = sorted(corpus["ref"].unique(), key=lambda r: (r.split("-")[0], int(r.split("-")[1]) if r.split("-")[-1].isdigit() else 0))
         ref = st.selectbox("Document", refs, index=refs.index("GC-1385") if "GC-1385" in refs else 0, key="ask_ref")
         win = st.slider("Window (days before and after)", 30, 720, 365, step=30, key="ask_win")
-        anchor, sel = around_document(corpus, ref, win)
+        anchor, sel = around_document(corpus, ref, win, idx)
         if anchor is None:
             st.warning("Document not found.")
             st.stop()
@@ -417,7 +417,7 @@ elif page == "Ask the project":
         st.caption("Chronology of the records found (no AI):")
         st.markdown(summary_offline(sel))
     show = sel.assign(include=True, date=sel["date"].dt.date)
-    cols = ["include", "date", "label", "kind", "source", "topic", "text"] + (["when"] if "when" in show else [])
+    cols = ["include", "date", "label", "kind", "source", "topic", "text"] + [c for c in ["when", "link"] if c in show]
     ed = st.data_editor(show[cols], hide_index=True, width="stretch", height=360, key="ask_tbl_" + key,
                         disabled=[c for c in cols if c != "include"],
                         column_config={"text": st.column_config.TextColumn("content", width="large")})
