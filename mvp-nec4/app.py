@@ -141,7 +141,7 @@ ACT_LABEL = {r.task_code: f"{r.task_code} · {r.task_name[:80]}" for r in ACTS.i
 # ---------- sidebar ----------
 st.sidebar.title("🚧 NEC4 CE Tracker")
 st.sidebar.caption("MVP - delay & compensation event control")
-PAGES = ["Tracker", "Pergunte ao projeto", "Theme search", "Fragnet & narrative", "EW → PMI → CE chain", "PMI register",
+PAGES = ["Tracker", "Ask the project", "Theme search", "Fragnet & narrative", "EW → PMI → CE chain", "PMI register",
          "CEMAR registers", "Ingest documents", "CE dashboard", "Timeline", "EW scan", "Draft notification", "NEC4 rules"]
 if st.session_state.get("goto") in PAGES:
     st.session_state["nav"] = st.session_state.pop("goto")
@@ -355,49 +355,49 @@ if page == "Tracker":
                        "tracker.csv")
     st.caption("Changes live in this session. Download the CSV to keep them (database persistence is a next step).")
 
-elif page == "Pergunte ao projeto":
-    st.title("Pergunte ao projeto")
-    st.caption("Pergunte em linguagem normal (português ou inglês) ou escolha um documento. A busca percorre todos os "
-               "fatos do tracker, PMIs, EWs, CEs, TQs e cartas GC e não tem custo; a IA só é usada se você clicar em "
-               "'Resumir com IA', e ela precisa citar as referências.")
+elif page == "Ask the project":
+    st.title("Ask the project")
+    st.caption("Ask in plain language (Portuguese or English) or pick one document. The search runs over every "
+               "tracker fact, PMI, early warning and CE and is free; the AI is used only if you click "
+               "'Summarise with AI', and it must cite the references.")
     corpus, idx = search_index()
-    mode = st.radio("Buscar por", ["Pergunta", "Documento (antes e depois)"], horizontal=True, key="ask_mode")
-    if mode == "Pergunta":
+    mode = st.radio("Search by", ["Question", "Document (before and after)"], horizontal=True, key="ask_mode")
+    if mode == "Question":
         examples = ["problemas na ponte perto da estaca 1600 desde março e o que o PM respondeu",
                     "castores na estaca 6500", "atrasos da Openreach", "Guay Farmhouse acesso demolição"]
-        ex = st.selectbox("Exemplos", [""] + examples, key="ask_ex", placeholder="Escolha um exemplo (opcional)")
-        q = st.text_input("Sua pergunta", ex, key=f"ask_q_{ex}",
-                          placeholder="ex.: o que aconteceu com a ponte na estaca 1600 desde março?")
+        ex = st.selectbox("Examples", [""] + examples, key="ask_ex")
+        q = st.text_input("Your question", ex, key=f"ask_q_{ex}",
+                          placeholder="e.g. what happened with the bridge at CH 1600 since March?")
         if not q:
             st.stop()
         since, ch = parse_query(q)
-        hits = idx.search(q, k=int(st.slider("Máximo de resultados", 10, 60, 30, key="ask_k")), since=since, ch=ch)
-        notes = [f"desde {since:%m/%Y}" if since is not None else "", f"perto da estaca {ch}" if ch else ""]
-        st.caption("Filtros entendidos: " + (", ".join(n for n in notes if n) or "nenhum") +
-                   " · sinônimos acrescentados: " + ", ".join(sorted(set(idx.expand(q)) - set(q.lower().split())))[:200])
+        hits = idx.search(q, k=int(st.slider("Max results", 10, 60, 30, key="ask_k")), since=since, ch=ch)
+        notes = [f"since {since:%b %Y}" if since is not None else "", f"near CH {ch}" if ch else ""]
+        st.caption("Understood filters: " + (", ".join(n for n in notes if n) or "none") +
+                   " · synonyms added: " + ", ".join(sorted(set(idx.expand(q)) - set(q.lower().split())))[:200])
         if hits.empty:
-            st.warning("Nada encontrado. Tente outras palavras ou uma referência (EW-95, PMI-30, GC-1385).")
+            st.warning("Nothing found. Try other words or a reference (EW-95, PMI-30, GC-1385).")
             st.stop()
         sel = hits.sort_values("date")
         key = "ask_" + q
     else:
         refs = sorted(corpus["ref"].unique(), key=lambda r: (r.split("-")[0], int(r.split("-")[1]) if r.split("-")[-1].isdigit() else 0))
-        ref = st.selectbox("Documento", refs, index=refs.index("GC-1385") if "GC-1385" in refs else 0, key="ask_ref")
-        win = st.slider("Janela (dias antes e depois)", 30, 720, 365, step=30, key="ask_win")
+        ref = st.selectbox("Document", refs, index=refs.index("GC-1385") if "GC-1385" in refs else 0, key="ask_ref")
+        win = st.slider("Window (days before and after)", 30, 720, 365, step=30, key="ask_win")
         anchor, sel = around_document(corpus, ref, win)
         if anchor is None:
-            st.warning("Documento não encontrado.")
+            st.warning("Document not found.")
             st.stop()
         st.info(f"**{anchor.label}** · {anchor.date:%d %b %Y} · {anchor.kind}\n\n{' '.join(str(anchor.text).split())[:500]}")
-        b, a = (sel["when"] == "antes").sum(), (sel["when"] == "depois").sum()
+        b, a = (sel["when"] == "before").sum(), (sel["when"] == "after").sum()
         c1, c2, c3 = st.columns(3)
-        c1.metric("Antes", int(b))
-        c2.metric("Depois", int(a))
-        c3.metric("Referências ligadas", len(set().union(*sel["refs"])) if len(sel) else 0)
-        q = f"O que aconteceu antes e depois de {anchor.label}?"
+        c1.metric("Before", int(b))
+        c2.metric("After", int(a))
+        c3.metric("References linked", len(set().union(*sel["refs"])) if len(sel) else 0)
+        q = f"What happened before and after {anchor.label}?"
         key = "ask_doc_" + ref
     k1, k2, k3 = st.columns(3)
-    k1.metric("Registros encontrados", len(sel))
+    k1.metric("Records found", len(sel))
     k2.metric("PMIs", int((sel["source"] == "PMI").sum()))
     k3.metric("CEs", int((sel["source"] == "CE (from PMIs)").sum()))
     tl = sel.copy()
@@ -407,21 +407,21 @@ elif page == "Pergunte ao projeto":
     fig.update_traces(marker=dict(size=11))
     fig.update_layout(margin=dict(l=0, r=0, t=10, b=0), yaxis_title=None, xaxis_title=None, showlegend=False)
     st.plotly_chart(fig, width="stretch")
-    st.markdown("**Resposta**")
-    if ai_on and st.button("✨ Resumir com IA (usa créditos)", key="ask_ai_btn"):
-        with st.spinner("Escrevendo a resposta a partir dos registros encontrados..."):
+    st.markdown("**Answer**")
+    if ai_on and st.button("✨ Summarise with AI (uses credits)", key="ask_ai_btn"):
+        with st.spinner("Writing the answer from the records found..."):
             st.session_state[key] = summary_ai(q, sel, extractor.MODEL)
     if st.session_state.get(key):
         st.success(st.session_state[key])
     else:
-        st.caption("Cronologia dos registros encontrados (sem IA):")
+        st.caption("Chronology of the records found (no AI):")
         st.markdown(summary_offline(sel))
     show = sel.assign(include=True, date=sel["date"].dt.date)
     cols = ["include", "date", "label", "kind", "source", "topic", "text"] + (["when"] if "when" in show else [])
     ed = st.data_editor(show[cols], hide_index=True, width="stretch", height=360, key="ask_tbl_" + key,
                         disabled=[c for c in cols if c != "include"],
-                        column_config={"include": st.column_config.CheckboxColumn("incluir"), "date": "data", "label": "referência", "kind": "tipo", "source": "fonte", "topic": "assunto", "when": "quando", "text": st.column_config.TextColumn("conteúdo", width="large")})
-    if st.button("Montar fragnet com os registros marcados ➜", type="primary"):
+                        column_config={"text": st.column_config.TextColumn("content", width="large")})
+    if st.button("Build fragnet from the ticked records ➜", type="primary"):
         pick = sel.loc[ed[ed["include"]].index]
         st.session_state["mixed"] = {
             "facts": pd.DataFrame({"date": pick["date"], "ref": pick["label"], "entry_type": pick["kind"],
@@ -915,7 +915,7 @@ elif page == "CEMAR registers":
         st.dataframe(g[["gc", "date", "from", "title", "kind", "further_to", "status", "package", "description"]],
                      hide_index=True, width="stretch", height=480,
                      column_config={"description": st.column_config.TextColumn(width="large")})
-        st.caption("Use 'Pergunte ao projeto' → Documento to see what happened before and after any letter.")
+        st.caption("Use 'Ask the project' → Document to see what happened before and after any letter.")
 
 elif page == "Ingest documents":
     st.title("Ingest new documents")

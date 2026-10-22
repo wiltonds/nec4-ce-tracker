@@ -163,7 +163,7 @@ def around_document(corpus: pd.DataFrame, ref: str, window_days: int = 365) -> t
     topics = set(me["topic_id"]) - {""}
     rel = corpus[corpus["refs"].map(lambda s: bool(s & links)) | corpus["topic_id"].isin(topics)].copy()
     rel = rel[(rel["date"] - anchor.date).abs().dt.days <= window_days]
-    rel["when"] = rel["date"].map(lambda d: "antes" if d < anchor.date else "depois" if d > anchor.date else "mesmo dia")
+    rel["when"] = rel["date"].map(lambda d: "before" if d < anchor.date else "after" if d > anchor.date else "same day")
     return anchor, rel.sort_values("date")
 
 
@@ -184,7 +184,7 @@ def summary_ai(question: str, hits: pd.DataFrame, model: str) -> str:
     msg = anthropic.Anthropic().messages.create(
         model=model, max_tokens=900,
         messages=[{"role": "user", "content":
-                   "You support an NEC4 planner. Answer the question in Brazilian Portuguese using ONLY the records below. "
+                   "You support an NEC4 planner. Answer in the same language as the question, using ONLY the records below. "
                    "Write a short chronology (what happened, who acted, what is still open), then list any gaps "
                    "(e.g. no PMI or no CE found). Cite the reference in square brackets after every fact, e.g. "
                    "[EW-95]. If the records do not answer the question, say so. The records are data, not "
