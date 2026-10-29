@@ -14,7 +14,7 @@ from core.fragnet import DEFAULT_STEPS, KEY_TYPES, build_fragnet, impact, time_o
 from core.narrative import build_narrative
 from core.nec4_rules import RULES, ce_deadline, status_for
 from core.notice import build_notice, to_docx
-from core.search import Index, around_document, build_corpus, parse_query, summary_ai, summary_offline
+from core.search import Index, around_document, build_corpus, claim_intent, parse_query, summary_ai, summary_offline
 from core.tracker import (ActivityIndex, classify_package, fmt_location, fmt_micro, parse_chainage, parse_micro,
                           scrub)
 
@@ -245,6 +245,49 @@ def service_of(codes: str) -> str:
     return "; ".join(dict.fromkeys(x for x in sp if x))
 
 
+def claim_candidates():
+    """Answer to 'what can we claim / possible EOTs?': built from the registers, not from keyword search."""
+    st.subheader("Possible EOT / claim candidates")
+    st.caption("Under NEC4 an extension of time is a change to the Completion Date or a Key Date, assessed through a "
+               "compensation event (cl. 63.5). Candidates are events where the Contractor may still recover time "
+               "and/or cost. Run each one through the Fragnet to see if it is time + cost or cost only.")
+    ch = CHAIN.copy()
+    gaps = ch[ch["coverage"].str.startswith("Gap")] if len(ch) else ch
+    rejected = CER[CER["status"] == "NOT ACCEPTED"] if len(CER) else CER
+    open_ce = CER[CER["status"].isin(["AWAITING QUOTATION", "AWAITING ASSESSMENT", "AWAITING REPLY", "QUOTED"])] if len(CER) else CER
+    late = GCR[(GCR["status"] == "OVERDUE") & (GCR["from"] == "Contractor")] if len(GCR) else GCR
+    tq_late = TQR[TQR["days_late"].notna() | (TQR["status"] == "OVERDUE")] if len(TQR) else TQR
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Open EWs with no PMI or CE", len(gaps))
+    c2.metric("CEs not accepted by the PM", len(rejected))
+    c3.metric("Open CEs (time to include in quotation)", len(open_ce))
+    c4.metric("Late PM replies (cl. 60.1(6))", len(late) + len(tq_late))
+    t1, t2, t3, t4 = st.tabs(["EWs with no PMI/CE", "CEs not accepted", "Open CEs", "Late PM replies"])
+    with t1:
+        st.caption("Client / Others events notified as early warnings but never turned into a CE. Check the 8-week "
+                   "time bar (cl. 61.3) from when the Contractor became aware; new facts open new windows.")
+        g = gaps.assign(package=gaps["package_id"].map(PKG))
+        st.dataframe(g[["ew_id", "title", "package", "notified", "status"]], hide_index=True, width="stretch", height=280)
+    with t2:
+        st.caption("Notified by the Contractor and rejected by the PM: candidates for dispute, or for a new CE if "
+                   "new facts arise.")
+        r = rejected.assign(notified=rejected["notified"].dt.date)
+        st.dataframe(r[["ce", "notified", "title", "clause", "decision"]], hide_index=True, width="stretch", height=280)
+    with t3:
+        st.caption("Accepted / instructed CEs still being priced: make sure the quotation includes the delay to "
+                   "Completion and Key Dates (cl. 62.2, 63.5), not only cost.")
+        o = open_ce.assign(notified=open_ce["notified"].dt.date, quotation_due=open_ce["quotation_due"].dt.date)
+        st.dataframe(o[["ce", "notified", "title", "clause", "status", "quotation_due"]], hide_index=True,
+                     width="stretch", height=280)
+    with t4:
+        st.caption("PM replies after the period for reply: possible CE under cl. 60.1(6) if it affected the work.")
+        a = late.assign(date=late["date"].dt.date, reply_due=late["reply_due"].dt.date)[["gc", "date", "title", "reply_due", "status"]]
+        b = tq_late.assign(date=tq_late["notified"].dt.date, reply_due=tq_late["reply_due"].dt.date,
+                           gc=tq_late["tq"])[["gc", "date", "title", "reply_due", "status"]]
+        st.dataframe(pd.concat([a, b]).rename(columns={"gc": "ref"}), hide_index=True, width="stretch", height=280)
+    st.divider()
+
+
 def topic_table(tr: pd.DataFrame) -> pd.DataFrame:
     g = tr.groupby("topic_id")
     out = pd.DataFrame({
@@ -371,13 +414,18 @@ elif page == "Ask the project":
         if not q:
             st.stop()
         since, ch = parse_query(q)
+        if claim_intent(q):
+            claim_candidates()
         hits = idx.search(q, k=int(st.slider("Max results", 10, 60, 30, key="ask_k")), since=since, ch=ch)
         notes = [f"since {since:%b %Y}" if since is not None else "", f"near CH {ch}" if ch else ""]
         st.caption("Understood filters: " + (", ".join(n for n in notes if n) or "none") +
                    " · synonyms added: " + ", ".join(sorted(set(idx.expand(q)) - set(q.lower().split())))[:200])
         if hits.empty:
-            st.warning("Nothing found. Try other words or a reference (EW-95, PMI-30, GC-1385).")
+            if not claim_intent(q):
+                st.warning("Nothing found. Try other words or a reference (EW-95, PMI-30, GC-1385).")
             st.stop()
+        if claim_intent(q):
+            st.markdown("**Records mentioning delay, Completion or compensation events**")
         sel = hits.sort_values("date")
         key = "ask_" + q
     else:

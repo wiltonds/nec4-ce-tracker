@@ -6,12 +6,19 @@ the user asks for a written summary, and it must cite the references it was give
 
 import math
 import re
+import unicodedata
 from collections import Counter
 
 import pandas as pd
 
 # Portuguese -> English and project synonyms, so "ponte" also finds "Ledpettie", "LB 5574", "bridge"...
+CLAIM_TERMS = ["compensation", "event", "completion", "delay", "extension", "time", "key", "date"]
 SYNONYMS = {
+    "eot": CLAIM_TERMS, "extension": CLAIM_TERMS, "claim": CLAIM_TERMS, "claims": CLAIM_TERMS,
+    "pleito": CLAIM_TERMS, "pleitos": CLAIM_TERMS, "prorrogacao": CLAIM_TERMS, "prazo": ["completion", "delay", "time"],
+    "oportunidade": CLAIM_TERMS, "oportunidades": CLAIM_TERMS, "opportunity": CLAIM_TERMS, "opportunities": CLAIM_TERMS,
+    "compensacao": ["compensation", "ce"], "agua": ["water", "scottish"], "demolicao": ["demolition"],
+    "instrucao": ["pmi", "instruction"], "cotacao": ["quotation"], "licenca": ["licence", "consent"],
     "ponte": ["bridge", "ledpettie", "lb5574", "structure"], "bridge": ["ledpettie", "lb5574"],
     "ledpettie": ["lb5574", "bridge"], "castor": ["beaver"], "castores": ["beaver", "beavers"],
     "beaver": ["beavers", "naturescot"], "beavers": ["beaver", "naturescot"], "delays": ["delay", "late"],
@@ -27,7 +34,9 @@ SYNONYMS = {
     "licença": ["licence", "consent"], "consentimento": ["consent"], "cotacao": ["quotation"],
     "cotação": ["quotation"], "evento": ["event", "ce"], "compensacao": ["compensation", "ce"],
 }
-STOP = set("o a os as de da do das dos e em no na nos nas que com por para um uma sobre desde ate até "
+STOP = set("sao quais qual possiveis possivel ha tem esta estao foram foi ate nao entre mais todos todas existe existem "
+           "voce me mostre liste lista which are there any list show me all possible could can do does how many "
+           "o a os as de da do das dos e em no na nos nas que com por para um uma sobre desde ate até "
            "the of and to in on for with from by is are was were be this that it at as an or what whats "
            "aconteceu acontecendo houve problema problemas qual quais como quando onde".split())
 SIM_STOP = set("change scope instruct instruction instructs accordance clause conditions contract following updated "
@@ -40,8 +49,12 @@ MONTHS = {"janeiro": 1, "fevereiro": 2, "marco": 3, "março": 3, "abril": 4, "ma
 REF_RE = re.compile(r"\b(EW|PMI|CE|GC|TQ|QTE|PI)[- ]?0*(\d+)\b", re.I)
 
 
+def _ascii(t: str) -> str:
+    return unicodedata.normalize("NFKD", str(t)).encode("ascii", "ignore").decode()
+
+
 def _tok(text: str):
-    t = str(text).lower()
+    t = _ascii(text).lower()
     t = re.sub(r"\blb\s*5574\b", "lb5574", t)
     return [w for w in re.findall(r"[a-zà-ú0-9]+", t) if w not in STOP and len(w) > 1]
 
@@ -146,6 +159,15 @@ class Index:
         if since is not None:
             out = out[out["date"] >= pd.Timestamp(since)]
         return out.sort_values("score", ascending=False).head(k)
+
+
+CLAIM_INTENT = re.compile(r"\b(eot|extension of time|extensions? of time|claims?|pleitos?|prorroga\w*|oportunidades?|"
+                          r"opportunit\w*|what (?:can|could) we claim|time bar)\b", re.I)
+
+
+def claim_intent(q: str) -> bool:
+    """Analytical question about what can still be claimed (time and/or money)."""
+    return bool(CLAIM_INTENT.search(_ascii(q)))
 
 
 def parse_query(q: str):
